@@ -3,6 +3,11 @@ namespace zaek\basics\algorithm;
 
 class COverride extends \SplDoublyLinkedList
 {
+    public function __construct()
+    {
+        $this->setIteratorMode($this::IT_MODE_LIFO | $this::IT_MODE_KEEP);
+    }
+
     public function rollMethod($method_name, $params = array())
     {
         $this->rewind();

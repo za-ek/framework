@@ -9,7 +9,12 @@ final class CConfig
      *
      * @var array
      */
-    private $_data    =  array();
+    protected $_data    =  array();
+
+    public function __construct(array $arr = [])
+    {
+        $this->_data = $arr;
+    }
 
     /**
      * @en Class constructor receive a configuration array:
@@ -54,12 +59,8 @@ final class CConfig
      * .
      * @param $arr
      */
-    public function __construct($arr)
-    {
-        $this->_data = $arr;
-    }
 
-    public function override($arr)
+    public function override(array $arr)
     {
         $this->_data = array_replace_recursive(
             $this->_data + $arr,
@@ -85,7 +86,7 @@ final class CConfig
     public function getValue($sec, $opt)
     {
         // если не присутствует раздел
-        if(strlen($sec) > 0 && !array_key_exists($sec,$this->_data)) {
+        if(strlen($sec) > 0 && !array_key_exists($sec, $this->_data)) {
             throw new CException("CONFIG_SECTION_NOT_SET [[".$sec."]]", 3);
         }
 
@@ -118,5 +119,10 @@ final class CConfig
     public function getArray()
     {
         return $this->_data;
+    }
+    public function setArray(array $arr)
+    {
+        $this->_data = $arr;
+        return $this;
     }
 }
