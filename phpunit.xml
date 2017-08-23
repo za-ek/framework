@@ -1,0 +1,7 @@
+<phpunit bootstrap="zaek/bin/controller.php">
+    <testsuites>
+        <testsuite name="kernel">
+            <directory>zaek/tests/framework/kernel</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
