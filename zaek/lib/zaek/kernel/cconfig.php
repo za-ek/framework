@@ -59,9 +59,12 @@ final class CConfig
         $this->_data = $arr;
     }
 
-    public function overwrite($arr)
+    public function override($arr)
     {
-
+        $this->_data = array_replace_recursive(
+            $this->_data + $arr,
+            $arr
+        );
     }
 
     /**
