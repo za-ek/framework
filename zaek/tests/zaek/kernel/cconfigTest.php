@@ -1,7 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-class cconfigTest extends PHPUnit_Framework_TestCase
+class cconfigTest extends TestCase
 {
     protected $_config;
     protected $_a_config;

@@ -184,7 +184,7 @@ class CException extends \Exception
      * @es Devuelve lista de las funciones obtenido desde el mensaje del error
      * @ru Возвращает список проблемных функций
      *
-     * @return string
+     * @return array
      */
     public function getFunctions()
     {
@@ -206,7 +206,7 @@ class CException extends \Exception
      * @es Devuelve el número del argumento del error obtenido desde el mensaje del error
      * @ru Возвращает номер аргумента в функции с ошибкой
      *
-     * @return string
+     * @return array
      */
     public function getArg()
     {
