@@ -1,12 +1,14 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
-class ConfigTest extends TestCase
+require '../../../bin/controller.php';
+
+class ConfigTest extends PHPUnit_Framework_TestCase
 {
-    public function testUnsetValue()
+    public function testException()
     {
-        // Config
         $conf1 = new \zaek\kernel\CConfig(['user' => ['id' => 1]]);
-        $this->expectException($conf1->getValue('user', 'name'));
+        $this->expectException(\zaek\kernel\CException::class);
+        $conf1->getValue('user', 'name');
     }
 }
