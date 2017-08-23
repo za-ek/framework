@@ -71,12 +71,10 @@ class CConfigList extends COverride
                 break;
         }
 
-        $this->prev();
-        $this->offsetUnset($this->key());
-        $this->add($this->key()-1, $a);
+        $this[$this->key()] = $a;
     }
 
-    public function addFile($path, $type = false)
+    public function addFile($path, $type)
     {
         parent::push([$type, $path, null]);
     }

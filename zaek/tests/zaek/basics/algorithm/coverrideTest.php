@@ -27,12 +27,11 @@ class coverrideTest extends TestCase
     }
     public function testRollForward()
     {
-        $this->_override->setIteratorMode($this->_override::IT_MODE_LIFO);
         $this->assertEquals(12, $this->_override->rollMethod('getVal', [3]));
     }
     public function testRollBackward()
     {
-        $this->_override->setIteratorMode($this->_override::IT_MODE_FIFO);
+        $this->_override->reverse();
         $this->assertEquals(3, $this->_override->rollMethod('getVal', [3]));
     }
 }

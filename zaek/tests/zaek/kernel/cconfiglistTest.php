@@ -15,7 +15,7 @@ class cconfiglistTest extends TestCase
         ]));
 
         $this->assertEquals('%DOCUMENT_ROOT%/templates', $list->get('template','path'));
-        $this->assertEquals(0, $list->offsetGet(1)[2]);
+        $this->assertEquals(null, $list[0][2]);
 
         $this->assertEquals('default', $list->get('template','code'));
 
@@ -33,10 +33,41 @@ class cconfiglistTest extends TestCase
         ]));
 
         $this->assertEquals('%DOCUMENT_ROOT%/templates', $list->get('template','path'));
-        $this->assertEquals(0, $list->offsetGet(1)[2]);
+        $this->assertEquals(null, $list[0][2]);
 
         $this->assertEquals('default', $list->get('template','code'));
         $this->assertEquals(false, $list->get('template','use_buffer'));
 
+    }
+    public function testInsert()
+    {
+        $list = new \zaek\kernel\CConfigList();
+        $list->addFile(__DIR__ . '/../../../conf/default.ini.php', 'ini');
+
+        $list->push(new \zaek\kernel\CConfig([
+            'template' => [
+                'path' => '%DOCUMENT_ROOT%/templates',
+                'use_buffer' => false
+            ]
+        ]));
+
+        $this->assertEquals('%DOCUMENT_ROOT%/templates', $list->get('template','path'));
+        $this->assertEquals(null, $list[0][2]);
+
+        $this->assertEquals('default', $list->get('template','code'));
+        $this->assertEquals(false, $list->get('template','use_buffer'));
+
+        $list->push([
+            'template' => [
+                'use_buffer' => true
+            ]
+        ]);
+        $this->assertEquals(true, $list->get('template','use_buffer'));
+        $list->push([
+            'user' => [
+                'id' => 1
+            ]
+        ]);
+        $this->assertEquals(1, $list->get('user','id'));
     }
 }
