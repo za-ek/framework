@@ -1,0 +1,1 @@
+It seems you have disabled mod_rewrite or your web-server does not catch .htaccess-files.

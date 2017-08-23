@@ -1,0 +1,51 @@
+#<?php die(); ?>
+Options Indexes FollowSymLinks MultiViews
+
+# Prevent use of obsolete features
+php_flag allow_call_time_pass_reference 0
+
+# Display all errors
+php_flag display_errors on
+php_value display_errors 1
+php_value error_reporting 8191
+
+ErrorDocument 404 /zaek/bin/controller.php
+ErrorDocument 403 /zaek/bin/controller.php
+
+# Since Apache 2.4 we need to set this option
+<IfVersion >= 2.4>
+    Require all granted
+</IfVersion>
+
+# Redirect all requests for controller file
+# In this case we will redirect .php & .html files
+# You can catch all requests if there is a
+# proxy-server like nginx which will prevent calls
+# for static files
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    #RewriteCond %{REQUEST_FILENAME} !-d
+    #RewriteCond %{REQUEST_FILENAME} !-l
+    RewriteCond %{REQUEST_FILENAME} !/zaek/bin/controller.php
+    RewriteRule ^(.*)$ /zaek/bin/controller.php [L]
+
+    # You can specify file that you want by commenting previous
+    # line, replace PATH_TO_FILE with you path and uncommenting this two lines:
+    # RewriteCond %{REQUEST_FILENAME} !^PATH_TO_FILE$
+    # RewriteRule ^(.*)$ PATH_TO_FILE [L]
+
+</IfModule>
+
+# Directory index if not specified
+<IfModule mod_dir.c>
+    DirectoryIndex index.php index.html
+</IfModule>
+
+# There is an error in some version of apache
+# when all data encodes en single encoding
+# that may cause errors for binary data
+<IfModule mod_charset.c>
+    CharsetRecodeMultipartForms Off
+</IfModule>
