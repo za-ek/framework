@@ -1,1 +1,3 @@
-Hello! I am za-ek controller.
+<?php
+require __DIR__ . '/../lib/zaek/engine/cmain.php';
+$app = new \zaek\engine\CMain();
