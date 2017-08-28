@@ -1,6 +1,20 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
+function arrays_are_similar($a, $b) {
+    // we know that the indexes, but maybe not values, match.
+    // compare the values between the two arrays
+    foreach($a as $k => $v) {
+        if ( is_array($v) ) {
+            return arrays_are_similar($v, $b[$k]);
+        } else if ($v !== $b[$k]) {
+            return false;
+        }
+    }
+    // we have identical indexes, and no unequal values
+    return true;
+}
+
 class FileTest extends \zaek\kernel\CFile
 {
     public function convertPath($file)
@@ -139,30 +153,30 @@ class cfileTest extends TestCase
     public function testGetFs()
     {
         $root = $_SERVER["DOCUMENT_ROOT"] . '/zaek/tests/test_dir';
-        $this->assertEquals([
+        $this->assertTrue(arrays_are_similar([
             'dirs' => [
                 $root . '/1/',
                 $root . '/2/'
             ],
             'files' => [
                 $root . '/2.php',
-                $root . '/index.php',
                 $root . '/2/index.php',
+                $root . '/index.php',
                 $root . '/1/tmp',
                 $root . '/1/2',
             ]
-        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/'));
+        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/')));
 
-        $this->assertEquals([
+        $this->assertTrue(arrays_are_similar([
             'dirs' => [
             ],
             'files' => [
                 $root . '/2.php',
                 $root . '/index.php',
             ]
-        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/', $this->_app->fs()::TYPE_ARR, '*.php'));
+        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/', $this->_app->fs()::TYPE_ARR, '*.php')));
 
-        $this->assertEquals([
+        $this->assertTrue(arrays_are_similar([
             'dirs' => [
                 $root . '/2/'
             ],
@@ -172,6 +186,6 @@ class cfileTest extends TestCase
             ]
         ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/', $this->_app->fs()::TYPE_ARR, function($path) {
             return strstr($path, '2');
-        }));
+        })));
     }
 }
