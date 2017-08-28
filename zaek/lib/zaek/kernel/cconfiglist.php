@@ -28,6 +28,16 @@ class CConfigList extends COverride
     }
 
     /**
+     * Проверяет, определён ли параметр
+     * @param $sec
+     * @param $opt
+     * @return bool|mixed|null
+     */
+    public function isDefined($sec, $opt)
+    {
+        return $this->rollMethod('isDefined', array($sec, $opt));
+    }
+    /**
      * Переопределение абстрактного метода из класса COverride
      * @param $result
      * @return bool
