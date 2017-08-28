@@ -2,11 +2,13 @@
 namespace zaek\engine;
 
 use zaek\kernel\CConfigList;
+use zaek\kernel\CFile;
 
 class CMain
 {
     protected $_config = [];
     protected $_conf = null;
+    protected $_fs = null;
 
     public function __construct()
     {
@@ -33,7 +35,9 @@ class CMain
                     'content' => $_SERVER['DOCUMENT_ROOT']. '/content'
                 ],
                 'template' => [
-                    'use_template' => false
+                    'use_template' => false,
+                    'template_root' => $_SERVER["DOCUMENT_ROOT"],
+                    'relative_path' => '',
                 ],
                 'request' => [
                     'uri' => @$_SERVER["REQUEST_URI"]
@@ -47,13 +51,17 @@ class CMain
     public function run()
     {
         if ( $this->conf()->get('template', 'use_template') ) {
-
         } else {
             $file = $this->pathFromUri($this->conf()->get('request', 'uri'));
             if ( @file_exists($file) ) {
-                include $file;
+                $this->includeFile($file);
             }
         }
+    }
+
+    public function includeFile($file)
+    {
+        include $file;
     }
 
     public function pathFromUri($uri)
@@ -72,5 +80,17 @@ class CMain
     public function autoload($class)
     {
         @include __DIR__ . '/../../'. str_replace('\\','/',strtolower($class)). '.php';
+    }
+
+    /**
+     * @return null|CFile
+     */
+    public function fs()
+    {
+        if ( is_null($this->_fs) ) {
+            $this->_fs = new CFile($this);
+        }
+
+        return $this->_fs;
     }
 }
