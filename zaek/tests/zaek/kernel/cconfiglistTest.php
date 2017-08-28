@@ -70,4 +70,23 @@ class cconfiglistTest extends TestCase
         ]);
         $this->assertEquals(1, $list->get('user','id'));
     }
+    public function issetTest()
+    {
+        $list = new \zaek\kernel\CConfigList();
+
+        $list->push([
+            'template' => [
+                'root_param' => false,
+                'leaf_param' => true,
+            ]
+        ]);
+        $list->push(new \zaek\kernel\CConfig([
+            'template' => [
+                'leaf_param' => false
+            ]
+        ]));
+
+        $this->assertEquals(true, $list->isDefined('template', 'root_param'));
+        $this->assertEquals(false, $list->isDefined('template', 'non_exist_param'));
+    }
 }
