@@ -192,10 +192,8 @@ class CFile
      */
     public function getContent ($file)
     {
-        $file = $this->convertPath($file);
-
         if($this->checkRules($file, $this::MODE_R, true)) {
-            $content = file_get_contents($file);
+            $content = file_get_contents($this->convertPath($file));
             return $content;
         } else {
             throw new CException("CANNOT_GET_FILE_CONTENT [".$file."]", $this::E_ACCESS_DENIED);
@@ -280,8 +278,8 @@ class CFile
      */
     public function getRelativePath($f)
     {
-        if ( !$this->_root || strpos( $f, $this->_root) === 0 ) {
-            $f = substr($f, strlen($this->_root));
+        if ( !$this->getRootPath() || strpos( $f, $this->getRootPath()) === 0 ) {
+            $f = substr($f, strlen($this->getRootPath()));
         }
 
         return $f;
