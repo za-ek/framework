@@ -11,6 +11,7 @@ class CMain
     protected $_config = [];
     protected $_conf = null;
     protected $_fs = null;
+    protected $_template = null;
 
     public function __construct()
     {
@@ -50,15 +51,21 @@ class CMain
         return $this->_conf;
     }
 
+    public function template()
+    {
+        if ( is_null($this->_template) ) {
+            $this->_template = new CBuffer();
+        }
+        return $this->_template;
+    }
+
     public function run()
     {
         if ( $this->conf()->get('template', 'use_template') ) {
-            $buffer = new CBuffer();
-            $buffer->start();
+            $this->template()->start();
             $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
                 $this->conf()->get('template', 'code') . '/template.php');
-            $buffer->end();
-            echo $buffer->getContent();
+            echo $this->template()->end();
         } else {
             $file = $this->pathFromUri($this->conf()->get('request', 'uri'));
             $this->includeFile($file);
