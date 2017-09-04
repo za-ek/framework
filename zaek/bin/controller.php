@@ -7,7 +7,13 @@ $app->conf()->addFile($_SERVER['DOCUMENT_ROOT'] . '/config.ini.php', 'ini');
 $app->conf()->push([
     'request' => [
         'uri' => $_SERVER["REQUEST_URI"] ?? $_SERVER["SCRIPT_NAME"]
+    ],
+    'template' => [
+        'use_template' => true
     ]
 ]);
-
-$app->run();
+try {
+    $app->run();
+} catch ( \zaek\kernel\CException $e ) {
+    $e->explain();
+}
