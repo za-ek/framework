@@ -22,7 +22,7 @@ class CConfigList extends COverride
         if ( $result !== null ) {
             return $result;
         } else {
-            throw new CException('CONFIG_VALUE_NOT_SET ['.$sec.':'.$opt.']', 3);
+            throw new CException('CONFIG_VALUE_NOT_SET ['.$sec.','.$opt.']', 3);
         }
 
     }

@@ -108,7 +108,7 @@ class CFile
             try {
                 $this->_framework_root = $this->_conf->get('fs', 'framework_root');
             } catch (CException $e) {
-                $this->_framework_root = $this->_root;
+                $this->_framework_root = $this->getRootPath();
             }
 
             if (substr($this->_framework_root, -1) == '/') {
@@ -150,6 +150,7 @@ class CFile
                 '%WIDGET_TEMPLATE_ROOT%',
 
                 '%ADMIN_ROOT%',
+                '%DATA_ROOT%',
                 '%CACHE_ROOT%',
                 '%LANGUAGE_ROOT%',
                 '%WIDGET_ROOT%',
@@ -167,6 +168,7 @@ class CFile
                 $framework_root  . '/zaek/tpl/widgets',
 
                 $framework_root  . '/zaek/admin',
+                $framework_root  . '/zaek/tmp/data',
                 $framework_root  . '/zaek/tmp/cache',
                 $framework_root  . '/zaek/local',
                 $framework_root  . '/zaek/bin/widgets',
