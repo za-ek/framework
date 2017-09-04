@@ -64,6 +64,10 @@ class cfileTest extends TestCase
             ],
             'request' => [
                 'uri' => '/test_dir/'
+            ],
+            'content' => [
+                'default' => '%DOCUMENT_ROOT%/content',
+                'rule' => '%DOCUMENT_ROOT%/content',
             ]
         ]);
 
