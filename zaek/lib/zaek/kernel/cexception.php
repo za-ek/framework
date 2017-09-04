@@ -170,13 +170,13 @@ class CException extends \Exception
             $this->_add = $aFunction['args'];
         }
         if ( !$this->_func ) {
-            $this->_func = [
+            $this->_func = [[
                 'type' => 'class_method',
                 'val' => [
                     0 => $aFunction['class'],
                     1 => $aFunction['function']
                 ]
-            ];
+            ]];
         }
 
         parent::__construct($sResult, $code);
