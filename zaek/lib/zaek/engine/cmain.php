@@ -27,6 +27,10 @@ class CMain
         ]);
     }
 
+    /**
+     * Объект конфигурации
+     * @return CConfigList
+     */
     public function conf()
     {
         if ( is_null($this->_conf) ) {
@@ -51,6 +55,10 @@ class CMain
         return $this->_conf;
     }
 
+    /**
+     * Объект шаблона
+     * @return CBuffer
+     */
     public function template()
     {
         if ( is_null($this->_template) ) {
@@ -59,6 +67,9 @@ class CMain
         return $this->_template;
     }
 
+    /**
+     * Запуск приложения
+     */
     public function run()
     {
         if ( $this->conf()->get('template', 'use_template') ) {
@@ -67,11 +78,17 @@ class CMain
                 $this->conf()->get('template', 'code') . '/template.php');
             echo $this->template()->end();
         } else {
-            $file = $this->pathFromUri($this->conf()->get('request', 'uri'));
+            $file = $this->route($this->conf()->get('request', 'uri'));
             $this->includeFile($file);
         }
     }
 
+    /**
+     * Подключает файл с областью видимости приложения
+     *
+     * @param $file
+     * @throws CException
+     */
     public function includeFile($file)
     {
         // TODO: Проверка пути файла
@@ -82,7 +99,13 @@ class CMain
         }
     }
 
-    public function pathFromUri($uri)
+    /**
+     * Преобразовывает URI в путь к файлу
+     *
+     * @param $uri
+     * @return string
+     */
+    public function route($uri)
     {
         if(strpos($uri, '?') !== false) {
             $uri = substr($uri, 0, strpos($uri, '?'));
@@ -101,7 +124,8 @@ class CMain
     }
 
     /**
-     * @return null|CFile
+     * Объект файловой системы
+     * @return CFile
      */
     public function fs()
     {

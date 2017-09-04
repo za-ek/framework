@@ -13,7 +13,7 @@
 </head>
 <body>
 <?php
-$this->includeFile($this->pathFromUri($this->conf()->get('request', 'uri')));
+$this->includeFile($this->route($this->conf()->get('request', 'uri')));
 ?>
 </body>
 </html>
