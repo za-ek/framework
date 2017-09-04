@@ -1,7 +1,9 @@
 <?php
 namespace zaek\engine;
 
+use zaek\kernel\CBuffer;
 use zaek\kernel\CConfigList;
+use zaek\kernel\CException;
 use zaek\kernel\CFile;
 
 class CMain
@@ -36,7 +38,7 @@ class CMain
                 ],
                 'template' => [
                     'use_template' => false,
-                    'template_root' => $_SERVER["DOCUMENT_ROOT"],
+                    'template_root' => $_SERVER["DOCUMENT_ROOT"] . '/templates',
                     'relative_path' => '',
                 ],
                 'request' => [
@@ -51,17 +53,26 @@ class CMain
     public function run()
     {
         if ( $this->conf()->get('template', 'use_template') ) {
+            $buffer = new CBuffer();
+            $buffer->start();
+            $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
+                $this->conf()->get('template', 'code') . '/template.php');
+            $buffer->end();
+            echo $buffer->getContent();
         } else {
             $file = $this->pathFromUri($this->conf()->get('request', 'uri'));
-            if ( @file_exists($file) ) {
-                $this->includeFile($file);
-            }
+            $this->includeFile($file);
         }
     }
 
     public function includeFile($file)
     {
-        include $file;
+        // TODO: Проверка пути файла
+        if ( @file_exists($file) ) {
+            include $file;
+        } else {
+            throw new CException('FILE_NOT_FOUND (CMain::includeFile) ['.$file.']');
+        }
     }
 
     public function pathFromUri($uri)
