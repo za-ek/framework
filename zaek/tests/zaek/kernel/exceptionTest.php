@@ -7,7 +7,13 @@ class cexceptionTest extends TestCase
     {
         $e = new \zaek\kernel\CException('',1);
         $this->assertEquals('', $e->getSymCode());
-        $this->assertEquals([], $e->getFunctions());
+        $this->assertEquals([
+            'type' => 'class_method',
+            'val' => [
+                0 => __CLASS__,
+                1 => __FUNCTION__
+            ]
+        ], $e->getFunctions());
         $this->assertEquals([], $e->getAdd());
         $this->assertEquals([], $e->getArg());
     }
@@ -15,7 +21,13 @@ class cexceptionTest extends TestCase
     {
         $e = new \zaek\kernel\CException('TEST_EXCEPTION',1);
         $this->assertEquals('TEST_EXCEPTION', $e->getSymCode());
-        $this->assertEquals([], $e->getFunctions());
+        $this->assertEquals([
+            'type' => 'class_method',
+            'val' => [
+                0 => __CLASS__,
+                1 => __FUNCTION__
+            ]
+        ], $e->getFunctions());
         $this->assertEquals([], $e->getAdd());
         $this->assertEquals([], $e->getArg());
     }
