@@ -82,7 +82,7 @@ class CException extends \Exception
      * @param int $code - error code (numeric)
      *
      */
-    public function __construct($message, $code)
+    public function __construct($message, $code = 1)
     {
         $pattern = "/^(?<code>[^([{]*)(?<func>[^[{]*)(?<add>[^\{]*)(?<arg>.*)$/";
         preg_match_all($pattern, $message, $arr);
@@ -165,6 +165,20 @@ class CException extends \Exception
             }
         }
 
+        $aFunction = debug_backtrace()[1];
+        if ( !$this->_add ) {
+            $this->_add = $aFunction['args'];
+        }
+        if ( !$this->_func ) {
+            $this->_func = [
+                'type' => 'class_method',
+                'val' => [
+                    0 => $aFunction['class'],
+                    1 => $aFunction['function']
+                ]
+            ];
+        }
+
         parent::__construct($sResult, $code);
     }
 
@@ -216,5 +230,25 @@ class CException extends \Exception
     protected function getErrorDescription($err)
     {
         return (array_key_exists($err, self::$ERRORS)) ? self::$ERRORS[$err] : $err;
+    }
+    public function explain()
+    {
+        echo $this->getSymCode();
+        echo "<br/>\n";
+        foreach ( $this->_func as $func ) {
+            switch ($func['type']) {
+                case 'class_method':
+                    echo implode('::', $func['val']);
+                    break;
+            }
+            echo "<br/>\n";
+        }
+        foreach ( $this->_add as $add ) {
+            echo "&nbsp;&nbsp;\t{$add}<br/>\n";
+        }
+        $i = 1;
+        foreach ( $this->_arg as $arg ) {
+            echo ($i++) . "&nbsp;&nbsp;\t{$arg}<br/>\n";
+        }
     }
 }
