@@ -1,6 +1,7 @@
 <?php
 namespace zaek\engine;
 
+use zaek\data\CCluster;
 use zaek\kernel\CBuffer;
 use zaek\kernel\CConfigList;
 use zaek\kernel\CException;
@@ -12,6 +13,7 @@ class CMain
     protected $_conf = null;
     protected $_fs = null;
     protected $_template = null;
+    protected $_data = null;
 
     public function __construct()
     {
@@ -40,6 +42,10 @@ class CMain
                 'fs' => [
                     'root' => $_SERVER["DOCUMENT_ROOT"],
                     'content' => $_SERVER['DOCUMENT_ROOT']. '/content'
+                ],
+                'content' => [
+                    'default' => '%DOCUMENT_ROOT%/content',
+                    'rule' => '%DOCUMENT_ROOT%/content',
                 ],
                 'template' => [
                     'use_template' => false,
@@ -112,7 +118,7 @@ class CMain
         }
         if (substr($uri, -1) == '/') $uri .= 'index.php';
 
-        return $this->conf()->get('fs','content') . $uri;
+        return $this->fs()->fromUri($uri, $this);
     }
     /**
      * Basic autoload
@@ -134,5 +140,18 @@ class CMain
         }
 
         return $this->_fs;
+    }
+
+    /**
+     * Доступ к данным
+     * @return CCluster
+     */
+    public function data()
+    {
+        if ( is_null($this->_data) ) {
+            $this->_data = new CCluster($this);
+        }
+
+        return $this->_data;
     }
 }
