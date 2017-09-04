@@ -285,6 +285,10 @@ class CBuffer
     {
         $this->_enabled = false;
     }
+    public function enabled()
+    {
+        return $this->_enabled;
+    }
 
     public function __toString()
     {
