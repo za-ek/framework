@@ -35,15 +35,26 @@ class dataTest extends TestCase
         $list = $this->_app->data()->select('users');
 
         $this->assertTrue(arrays_are_similar(
-            [
-                "1", 'root', 'qwerty1'
-            ],
+            [],
             $list->fetch()
         ));
         $this->assertTrue(arrays_are_similar(
-            [
-                "2", 'admin', 'qwerty'
-            ],
+            [],
+            $list->fetch()
+        ));
+
+        $this->assertFalse($list->fetch());
+    }
+    public function testIncorrectRange()
+    {
+        $list = $this->_app->data()->select('users', [], ['code']);
+
+        $this->assertTrue(arrays_are_similar(
+            [],
+            $list->fetch()
+        ));
+        $this->assertTrue(arrays_are_similar(
+            [],
             $list->fetch()
         ));
 
@@ -54,9 +65,7 @@ class dataTest extends TestCase
         $list = $this->_app->data()->select('users', ['id' => 1]);
 
         $this->assertTrue(arrays_are_similar(
-            [
-                "1", 'root', 'qwerty1'
-            ],
+            [],
             $list->fetch()
         ));
 
@@ -86,6 +95,12 @@ class dataTest extends TestCase
 
         $this->assertTrue(arrays_are_similar(['root'],$list->fetch()));
 
+        $this->assertFalse($list->fetch());
+    }
+    public function testRangeOrder()
+    {
+        $list = $this->_app->data()->select('users', ['login' => 'root'], ['login','id']);
+        $this->assertTrue(arrays_are_similar(['root', '1'],$list->fetch()));
         $this->assertFalse($list->fetch());
     }
 }

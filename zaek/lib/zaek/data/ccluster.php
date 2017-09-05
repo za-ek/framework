@@ -58,8 +58,12 @@ class CCluster
             }
 
             // Range
-            $aRangeKeys = array_intersect($aData['fields'], $aRange);
-            if ( !$aRangeKeys ) $aRangeKeys = $aData['fields'];
+            $aRangeKeys = [];
+            foreach ( $aRange as $field ) {
+                if ( in_array($field, $aData['fields']) ) {
+                    $aRangeKeys[] = [$field, array_search($field, $aData['fields'])];
+                }
+            }
 
             foreach ( $aData['line'] as $k => $v ) {
                 foreach ( $aFilterKeys as $key => $field) {
@@ -68,7 +72,14 @@ class CCluster
                         continue 2;
                     }
                 }
-                $aData['line'][$k] = array_values(array_intersect_key($v, $aRangeKeys));
+
+                $arr = [];
+
+                foreach ( $aRangeKeys as $aKey ) {
+                    $arr[] = $aData['line'][$k][$aKey[1]];
+                }
+
+                $aData['line'][$k] = $arr;
             }
 
             // Limit

@@ -6,6 +6,7 @@ use zaek\kernel\CBuffer;
 use zaek\kernel\CConfigList;
 use zaek\kernel\CException;
 use zaek\kernel\CFile;
+use zaek\user\CUser;
 
 class CMain
 {
@@ -14,6 +15,7 @@ class CMain
     protected $_fs = null;
     protected $_template = null;
     protected $_data = null;
+    protected $_user = null;
 
     public function __construct()
     {
@@ -153,5 +155,13 @@ class CMain
         }
 
         return $this->_data;
+    }
+    public function user()
+    {
+        if ( is_null($this->_user) ) {
+            $this->_user = new CUser($this);
+        }
+
+        return $this->_user;
     }
 }
