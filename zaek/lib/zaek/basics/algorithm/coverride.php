@@ -60,8 +60,7 @@ class COverride implements \ArrayAccess, \Iterator
             }
         }
 
-
-        return false;
+        return null;
     }
 
     protected function callMethod($method_name, $params)
