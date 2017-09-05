@@ -25,4 +25,12 @@ class CCluster
         }
     }
 
+    public function get($id)
+    {
+        if ( isset($this->_list[$id]) ) {
+            return $this->_list[$id];
+        } else {
+            throw new CException('NO_SUCH_CONNECTION');
+        }
+    }
 }
