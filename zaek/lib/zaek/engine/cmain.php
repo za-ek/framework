@@ -2,6 +2,7 @@
 namespace zaek\engine;
 
 use zaek\data\CCluster;
+use zaek\data\ini\CConnector;
 use zaek\kernel\CBuffer;
 use zaek\kernel\CConfigList;
 use zaek\kernel\CException;
@@ -146,12 +147,12 @@ class CMain
 
     /**
      * Доступ к данным
-     * @return CCluster
+     * @return CConnector
      */
     public function data()
     {
         if ( is_null($this->_data) ) {
-            $this->_data = new CCluster($this);
+            $this->_data = new CConnector($this);
         }
 
         return $this->_data;
