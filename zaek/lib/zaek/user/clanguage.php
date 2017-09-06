@@ -93,8 +93,8 @@ class CLanguage
      */
     public function setCode($lang)
     {
-        if ( strlen($lang) == 2 ) {
-            $aMap = ['ru' => 'rus', 'en' => 'eng'];
+        if ( strlen($lang) != 2 ) {
+            $aMap = ['ru' => 'rus', 'en' => 'eng', 'en-us' => 'eng'];
             if ( array_key_exists($lang, $aMap) ) {
                 $lang = $aMap[$lang];
             }
