@@ -10,7 +10,7 @@ class StaticTestClass {
     public static function test($param) {
         return $param;
     }
-    public function throwTest()
+    public static function throwTest()
     {
         throw new Exception('', 1);
     }
