@@ -5,6 +5,7 @@ use zaek\data\CCluster;
 use zaek\data\ini\CConnector;
 use zaek\kernel\CBuffer;
 use zaek\kernel\CConfigList;
+use zaek\kernel\CDictionary;
 use zaek\kernel\CException;
 use zaek\kernel\CFile;
 use zaek\user\CUser;
@@ -17,6 +18,7 @@ class CMain
     protected $_template = null;
     protected $_data = null;
     protected $_user = null;
+    protected $_dic = null;
 
     public function __construct()
     {
@@ -57,6 +59,12 @@ class CMain
                 ],
                 'request' => [
                     'uri' => @$_SERVER["REQUEST_URI"]
+                ],
+                'language' => [
+                    'default' => 'rus',
+                    'list' => [
+                        'rus', 'eng'
+                    ]
                 ]
             ]);
         }
@@ -164,5 +172,12 @@ class CMain
         }
 
         return $this->_user;
+    }
+    public function dic()
+    {
+        if ( is_null($this->_dic) ) {
+            $this->_dic = new CDictionary($this);
+        }
+        return $this->_dic;
     }
 }

@@ -109,7 +109,7 @@ class CDictionary
     public function getLang()
     {
         if ( $this->_lang === null ) {
-            $this->_lang = $this->_app->user()->getLanguage();
+            $this->_lang = $this->_app->user()->lang()->getCode();
         }
 
         return $this->_lang;
