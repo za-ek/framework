@@ -5,11 +5,19 @@ use zaek\engine\CMain;
 
 class CUser
 {
+    /**
+     * @var CMain
+     */
     protected $_app;
     /**
      * @var CAccess
      */
     protected $_access;
+
+    /**
+     * @var CLanguage
+     */
+    protected $_language = null;
 
     public function __construct(CMain $app)
     {
@@ -22,5 +30,14 @@ class CUser
         }
 
         return $this->_access;
+    }
+
+    public function lang()
+    {
+        if ( is_null($this->_language) ) {
+            $this->_language = new CLanguage($this->_app);
+        }
+
+        return $this->_language;
     }
 }
