@@ -244,6 +244,7 @@ class CException extends \Exception
             echo "<br/>\n";
         }
         foreach ( $this->_add as $add ) {
+            if ( is_array($add) ) $add = implode(',', $add);
             echo "&nbsp;&nbsp;\t{$add}<br/>\n";
         }
         $i = 1;
