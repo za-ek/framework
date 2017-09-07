@@ -117,10 +117,33 @@ class CConnector extends \zaek\data\CConnector
      * @param $type
      * @param $aData
      * @return mixed
+     * @throws CException
      */
     public function insert($type, $aData)
     {
-        // TODO: Implement insert() method.
+        $link = $this->getLink();
+
+        $query = "INSERT INTO {$type} (".implode(',', array_keys($aData)).") 
+                  VALUES (".implode(',', array_fill(0, count($aData), '?')).")";
+        $stmt = mysqli_prepare($link, $query);
+        if ( $stmt ) {
+
+            foreach ( $aData as $k => $v ) {
+                $aData[$k] = &$v;
+            }
+
+            call_user_func_array(
+                [$stmt, 'bind_param'],
+                array_merge([str_repeat('s', count($aData))], $aData)
+            );
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                throw new CException(mysqli_error($link));
+            }
+        } else {
+            throw new CException(mysqli_error($this->getLink()));
+        }
     }
 
     /**
@@ -131,10 +154,60 @@ class CConnector extends \zaek\data\CConnector
      * @param array $aOrder
      * @param array $aLimit
      * @return mixed
+     * @throws CException
      */
     public function delete($type, $aFilter = [], $aOrder = [], $aLimit = [])
     {
-        // TODO: Implement delete() method.
+        $aValues = [];
+        if ( $aFilter ) {
+            foreach ($aFilter as $k => $v) {
+                $aFilter[$k] = "`{$k}` = ?";
+                $aValues[] = &$v;
+            }
+        } else {
+            $aFilter = [1];
+        }
+
+        if ( $aOrder ) {
+            foreach ($aOrder as $field => $order) {
+                $aOrder[$field] = "`{$field}` {$order}";
+            }
+
+            $order = " ORDER BY " . implode(',', $aOrder);
+        } else {
+            $order = '';
+        }
+
+        if ( !is_array($aLimit) ) {
+            $aLimit = [$aLimit];
+        }
+        if ( count($aLimit) == 1 || count($aLimit) == 2 ) {
+            $limit = ' LIMIT ' . implode(',', $aLimit);
+        } else {
+            $limit = '';
+        }
+
+        $query = "DELETE FROM {$type} 
+        WHERE " . implode(',', $aFilter) . $order . $limit;
+
+        $stmt = mysqli_prepare($this->getLink(), $query);
+
+        if ( $stmt ) {
+            if (count($aValues)) {
+                call_user_func_array(
+                    [$stmt, 'bind_param'],
+                    array_merge([str_repeat('s', count($aValues))], $aValues)
+                );
+            }
+
+            if ( $stmt->execute() ) {
+                return true;
+            } else {
+                throw new CException(mysqli_error($this->getLink()));
+            }
+        } else {
+            throw new CException(mysqli_error($this->getLink()));
+        }
     }
 
     /**
@@ -146,9 +219,62 @@ class CConnector extends \zaek\data\CConnector
      * @param array $aOrder
      * @param array $aLimit
      * @return mixed
+     * @throws CException
      */
     public function update($type, $aUpdate, $aFilter = [], $aOrder = [], $aLimit = [])
     {
-        // TODO: Implement update() method.
+        $aValues = [];
+
+        if ( $aFilter ) {
+            foreach ($aFilter as $k => $v) {
+                $aFilter[$k] = "`{$k}` = ?";
+                $aValues[] = &$v;
+            }
+        } else {
+            $aFilter = [1];
+        }
+
+        if ( $aOrder ) {
+            foreach ($aOrder as $field => $order) {
+                $aOrder[$field] = "`{$field}` {$order}";
+            }
+
+            $order = " ORDER BY " . implode(',', $aOrder);
+        } else {
+            $order = '';
+        }
+
+        if ( !is_array($aLimit) ) {
+            $aLimit = [$aLimit];
+        }
+        if ( count($aLimit) == 1 || count($aLimit) == 2 ) {
+            $limit = ' LIMIT ' . implode(',', $aLimit);
+        } else {
+            $limit = '';
+        }
+
+        $query = "UPDATE {$type} SET " . implode(' = ?,', array_keys($aUpdate)) . ' = ? '.
+                " WHERE " . implode(',', $aFilter) . $order . $limit;
+
+        $stmt = mysqli_prepare($this->getLink(), $query);
+
+        if ( $stmt ) {
+            foreach ( $aUpdate as $k => $v1 ) {
+                $aUpdate[$k] = &$v1;
+            }
+
+            call_user_func_array(
+                [$stmt, 'bind_param'],
+                array_merge([str_repeat('s', count($aUpdate)+count($aValues))], $aUpdate, $aValues)
+            );
+
+            if ( $stmt->execute() ) {
+                return true;
+            } else {
+                throw new CException(mysqli_error($this->getLink()));
+            }
+        } else {
+            throw new CException(mysqli_error($this->getLink()));
+        }
     }
 }
