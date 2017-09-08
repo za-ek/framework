@@ -180,4 +180,15 @@ class CMain
         }
         return $this->_dic;
     }
+
+
+    public function widget($code, $path = null)
+    {
+        if ( !$path ) {
+            $path = $this->conf()->get('template', 'template_root') . '/' .
+                $this->conf()->get('template', 'code') . '/widgets';
+        }
+
+        $this->includeFile($path. '/'.$code.'.php');
+    }
 }
