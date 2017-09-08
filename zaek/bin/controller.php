@@ -72,6 +72,16 @@ $app->conf()->push([
         'use_template' => true
     ]
 ]);
+
+// Панель управления AdminLTE
+if ( strpos($app->conf()->get('request', 'uri'), '/zaek/admin/') === 0 ) {
+    $app->conf()->push([
+        'template' => [
+            'code' => 'adminlte'
+        ]
+    ]);
+}
+
 try {
     $app->run();
 } catch ( \zaek\kernel\CException $e ) {
