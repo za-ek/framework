@@ -316,4 +316,10 @@ class CBuffer
     {
         $this->_content = '';
     }
+    public function push($code, $val)
+    {
+        if ( !isset($this->_params[$code]) ) $this->_params[$code] = [];
+
+        array_push($this->_params[$code], $val);
+    }
 }
