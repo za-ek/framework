@@ -67,17 +67,18 @@
 }
 .skin-zaek .sidebar-menu > li.header {
   color: #4b646f;
-  background: #1a2226;
+  background: #46927e;
 }
 .skin-zaek .sidebar-menu > li > a {
   color:#666;
   border-left: 3px solid transparent;
+  cursor:pointer;
 }
 .skin-zaek .sidebar-menu > li.active > a,
 .skin-zaek .sidebar-menu > li.menu-open > a {
   color: #000;
   background-color: #bfd0c8;
-  border-bottom: 1px solid #eee;
+  border-bottom: 0;
   -webkit-box-shadow: inset 6px 27px 15px -30px rgba(0,0,0,0.48);
   -moz-box-shadow: inset 6px 27px 15px -30px rgba(0,0,0,0.48);
   box-shadow: inset 6px 27px 15px -30px rgba(0,0,0,0.48);
