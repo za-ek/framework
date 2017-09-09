@@ -19,21 +19,6 @@ class CMain
     protected $_data = null;
     protected $_user = null;
     protected $_dic = null;
-
-    public function __construct()
-    {
-        /**
-         * Создаём список конфигов
-         * 1. Из массива
-         * 2. Конфиг сайта
-         * 3. Конфиг проекта
-         * 4. Дефолтный конфиг
-         */
-        spl_autoload_register([
-            $this, 'autoload'
-        ]);
-    }
-
     /**
      * Объект конфигурации
      * @return CConfigList
@@ -74,12 +59,12 @@ class CMain
 
     /**
      * Объект шаблона
-     * @return CBuffer
+     * @return CTemplate
      */
     public function template()
     {
         if ( is_null($this->_template) ) {
-            $this->_template = new CBuffer();
+            $this->_template = new CTemplate($this);
         }
         return $this->_template;
     }
