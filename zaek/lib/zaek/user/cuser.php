@@ -40,4 +40,8 @@ class CUser
 
         return $this->_language;
     }
+    public function can($action)
+    {
+        return $this->access()->can($action);
+    }
 }
