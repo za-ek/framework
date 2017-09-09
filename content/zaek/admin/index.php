@@ -1,11 +1,5 @@
 <?php
 $this->template()->addProp('title', 'Пример страницы админ-панели');
-
-$this->template()->push('left_menu', [
-    'link' => '/',
-    'name' => 'К сайту',
-    'icon' => 'share'
-])
 ?>
 
 <div class="box">
