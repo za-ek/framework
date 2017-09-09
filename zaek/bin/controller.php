@@ -61,15 +61,19 @@ $app = new class extends \zaek\engine\CMain{
     }
 };
 
+spl_autoload_register([
+    $app, 'autoload'
+]);
+
+// Добавляем конфиги
 $app->conf()->addFile(__DIR__ . '/../conf/default.ini.php', 'ini');
 $app->conf()->addFile(__DIR__ . '/../conf/mysqli.ini.php', 'ini');
 $app->conf()->addFile($_SERVER['DOCUMENT_ROOT'] . '/config.ini.php', 'ini');
+
+// URI
 $app->conf()->push([
     'request' => [
         'uri' => $_SERVER["REQUEST_URI"] ?? $_SERVER["SCRIPT_NAME"]
-    ],
-    'template' => [
-        'use_template' => true
     ]
 ]);
 
@@ -78,6 +82,21 @@ if ( strpos($app->conf()->get('request', 'uri'), '/zaek/admin/') === 0 ) {
     $app->conf()->push([
         'template' => [
             'code' => 'adminlte'
+        ]
+    ]);
+}
+
+// Ajax-запросы к виджетам - без шаблона
+if ( isset($_REQUEST['zAjax']) && $_REQUEST['zAjax'] === "1" ) {
+    $app->conf()->push([
+        'template' => [
+            'use_template' => false
+        ]
+    ]);
+} else {
+    $app->conf()->push([
+        'template' => [
+            'use_template' => true
         ]
     ]);
 }
