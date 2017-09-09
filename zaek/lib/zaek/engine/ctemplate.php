@@ -93,6 +93,14 @@ class CTemplate extends CBuffer
     {
         return $this->addProp('css', $val, $add_str);
     }
+    public function addMeta($type, $add_str = '')
+    {
+        return $this->addProp($type, $add_str);
+    }
+    public function setTitle($title)
+    {
+        $this->setValue('page_title', $title);
+    }
 
 
     public function showProp($type)
@@ -140,5 +148,17 @@ class CTemplate extends CBuffer
     {
         return $this->_app->conf()->get('template', 'template_root') . '/' .
             $this->_app->conf()->get('template', 'code') . '/images/'. $img;
+    }
+    public function getCss()
+    {
+        return $this->_css;
+    }
+    public function getJs()
+    {
+        return $this->_js;
+    }
+    public function getMeta()
+    {
+        return $this->_meta;
     }
 }
