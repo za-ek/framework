@@ -135,6 +135,7 @@ $tpl->addJs('\adminlte.min.js');
         <!-- /.search form -->
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu" data-widget="tree">
+            <li><a data-zajax="zaek.admin" href="/zaek/admin/"><i class="fa fa-tree"></i> Главная</a></li>
             <?php
             $app = $this;
 
@@ -145,7 +146,7 @@ $tpl->addJs('\adminlte.min.js');
                             if( $element['link'] == '/zaek/admin/general/') {
                                 continue;
                             }
-                            $aAct = explode('/', substr(str_replace('/zaek/admin/', '/zaek/', $element['link']), 1));
+                            $aAct = explode('/', substr($element['link'], 1));
                             $act = array_pop($aAct);
                             if ( $act ) {
                                 if ( strpos($act, 'action.') !== false ) {
@@ -199,11 +200,17 @@ $tpl->addJs('\adminlte.min.js');
                 show_admin_left_menu($app, $aElements, 0);
             });
 
-            $tpl->push('left_menu', [
-                'link' => '/zaek/admin/',
-                'name' => 'Главная',
-                'icon' => 'tree',
-            ]);
+            $aFiles = array_diff(scandir(__DIR__ . '/menu'), array('..', '.'));
+            natsort($aFiles);
+            $x = 0;
+            foreach ( $aFiles as $item ) {
+                $new_x = intval(intval($item) / 100);
+                if ( $x != $new_x ) {
+                    $tpl->push('left_menu', 'splice');
+                }
+                include 'menu/'.$item;
+                $x = $new_x;
+            }
             ?>
         </ul>
     </section>
@@ -213,7 +220,11 @@ $tpl->addJs('\adminlte.min.js');
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <?php
-        $this->includeFile($this->route($this->conf()->get('request', 'uri')));
+        try {
+            $this->includeFile($this->route($this->conf()->get('request', 'uri')));
+        } catch ( \zaek\kernel\CException $e ) {
+            echo $e->getMessage();
+        }
         ?>
     </div>
     <!-- /.content-wrapper -->
@@ -221,8 +232,7 @@ $tpl->addJs('\adminlte.min.js');
         <div class="pull-right hidden-xs">
             <b>Version</b> 0.1
         </div>
-        <strong>Copyright &copy; 2012-2017 <a href="https://www.za-ek.ru">Za-ek</a>.</strong> All rights
-        reserved.
+        <strong>Copyright &copy; 2012-2017 <a href="https://www.za-ek.ru">Za-ek</a></strong>
     </footer>
 
     <!-- Control Sidebar -->
