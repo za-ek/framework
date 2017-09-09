@@ -9,6 +9,7 @@ $tpl->addCss('\bootstrap.min.css');
 $tpl->addCss('\AdminLTE.min.css');
 $tpl->addCss('\skin-zaek.css');
 $tpl->addCss('\font-awesome.min.css');
+$tpl->addCss('\style.css');
 
 $tpl->addJs('\jquery.min.js');
 $tpl->addJs('\bootstrap.min.js');

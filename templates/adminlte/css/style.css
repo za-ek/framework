@@ -1,0 +1,6 @@
+.box .overlay {
+    display: none;
+}
+.table-row-click tbody{
+    cursor:pointer;
+}
