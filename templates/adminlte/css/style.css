@@ -4,3 +4,19 @@
 .table-row-click tbody{
     cursor:pointer;
 }
+.box {
+    margin: 5px 5px 5px 6px;
+    border-top:1px solid #f5f5f5;
+}
+
+* {
+    font-family: "Blogger Sans";
+}
+
+.box-header {
+    padding: 10px 10px 7px 10px;
+    border-bottom: 1px solid #ddeae7;
+}
+.box-header .box-title {
+    font-family: "Blogger Sans";
+}

@@ -153,4 +153,6 @@
 
 .content-wrapper {
   background-color: #fefefe;
+  margin-top: -5px;
+  padding-top: 5px;
 }
