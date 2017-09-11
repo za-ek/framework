@@ -9,11 +9,13 @@ $tpl->addCss('\bootstrap.min.css');
 $tpl->addCss('\AdminLTE.min.css');
 $tpl->addCss('\skin-zaek.css');
 $tpl->addCss('\font-awesome.min.css');
+$tpl->addCss('\bloggersans.css');
 $tpl->addCss('\style.css');
 
 $tpl->addJs('\jquery.min.js');
 $tpl->addJs('\bootstrap.min.js');
 $tpl->addJs('\adminlte.min.js');
+$tpl->addJs('\main.js');
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -36,7 +38,7 @@ $tpl->addJs('\adminlte.min.js');
 <div class="wrapper">
     <header class="main-header">
         <!-- Logo -->
-        <a href="index2.html" class="logo">
+        <a href="/zaek/admin/" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
             <span class="logo-mini"><b>za-ek</b></span>
             <!-- logo for regular state and mobile devices -->
