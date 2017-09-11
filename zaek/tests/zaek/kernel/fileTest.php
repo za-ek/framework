@@ -105,7 +105,7 @@ class cfileTest extends TestCase
         $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tpl', $this->fs()->convertPath('%TEMPLATE_ROOT%'));
         $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tpl/pages', $this->fs()->convertPath('%PAGE_TEMPLATE_ROOT%'));
         $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tpl/widgets', $this->fs()->convertPath('%WIDGET_TEMPLATE_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/admin', $this->fs()->convertPath('%ADMIN_ROOT%'));
+        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/content/zaek/admin', $this->fs()->convertPath('%ADMIN_ROOT%'));
         $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tmp/cache', $this->fs()->convertPath('%CACHE_ROOT%'));
         $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/local', $this->fs()->convertPath('%LANGUAGE_ROOT%'));
         $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/bin/widgets', $this->fs()->convertPath('%WIDGET_ROOT%'));
