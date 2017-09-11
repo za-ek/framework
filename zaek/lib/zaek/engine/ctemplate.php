@@ -101,6 +101,10 @@ class CTemplate extends CBuffer
     {
         $this->setValue('page_title', $title);
     }
+    public function getTitle()
+    {
+        return $this->getValue('page_title');
+    }
 
 
     public function showProp($type)
