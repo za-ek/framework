@@ -31,3 +31,11 @@ Zaek Framework - это фреймворк, главной идеей и цел�
 Загрузка файлов
 
 Модуль "Галерея"
+
+# Установка
+
+Из консоли, в корневой директории сайта:
+  
+wget https://github.com/za-ek/framework/archive/master.zip && unzip master.zip && rm master.zip && mv zaek-master/* ./ && mv zaek-master/.* ./ && rm -r zaek-master
+
+
