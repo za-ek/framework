@@ -167,7 +167,7 @@ class CFile
                 $framework_root  . '/zaek/tpl/pages',
                 $framework_root  . '/zaek/tpl/widgets',
 
-                $framework_root  . '/zaek/admin',
+                $framework_root  . '/content/zaek/admin',
                 $framework_root  . '/zaek/tmp/data',
                 $framework_root  . '/zaek/tmp/cache',
                 $framework_root  . '/zaek/local',
