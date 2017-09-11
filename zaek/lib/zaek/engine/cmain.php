@@ -71,31 +71,42 @@ class CMain
 
     /**
      * Запуск приложения
+     * @param bool $bShow - установить в false, что бы запретить вывод
+     * @return string
      */
-    public function run()
+    public function run($bShow = true)
     {
         if ( $this->conf()->get('template', 'use_template') ) {
             $this->template()->start();
             $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
                 $this->conf()->get('template', 'code') . '/template.php');
-            echo $this->template()->end();
+
+            $result = $this->template()->end();
+
+            if ( $bShow ) {
+                echo $result;
+            }
+
         } else {
             $file = $this->route($this->conf()->get('request', 'uri'));
-            $this->includeFile($file);
+            $result = $this->includeFile($file);
         }
+
+        return $result;
     }
 
     /**
      * Подключает файл с областью видимости приложения
      *
      * @param $file
+     * @return mixed
      * @throws CException
      */
     public function includeFile($file)
     {
         // TODO: Проверка пути файла
         if ( @file_exists($file) ) {
-            include $file;
+            return include $file;
         } else {
             throw new CException('FILE_NOT_FOUND (CMain::includeFile) ['.$file.']');
         }
