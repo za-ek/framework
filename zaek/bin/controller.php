@@ -45,7 +45,7 @@ class CMain extends \zaek\engine\CMain
  * Выбор контроллера в зависимости от запроса
  */
 if ( isset($_REQUEST['zAjax']) && $_REQUEST['zAjax'] === "1" ) {
-    include __DIR__ . '/controllers/ajax.php';
+    include_once __DIR__ . '/controllers/ajax.php';
 } else {
-    include __DIR__ . '/controllers/default.php';
+    include_once __DIR__ . '/controllers/default.php';
 }
