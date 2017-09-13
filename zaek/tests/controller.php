@@ -1,6 +1,8 @@
 <?php
 namespace PHPUnit\Framework;
 
+define('TESTING', true);
+
 include_once __DIR__ . '/../bin/controller.php';
 
 try {
