@@ -253,7 +253,7 @@ class CFile
     protected function checkFileRules ($file, $mode = self::MODE_R)
     {
         return ( ( $this->getAbsolute($file) ) && (
-                ($this->_root || strpos($file, $this->_root) === 0) ||
+                (!$this->getRootPath() || strpos($file, $this->getRootPath()) === 0) ||
                 strpos($file, sys_get_temp_dir()) === 0
             ) );
     }
