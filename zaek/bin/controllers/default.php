@@ -34,7 +34,7 @@ $app = new class extends CMain {
             if (array_key_exists($extension, $aStaticExtensions)) {
                 $this->template()->end();
                 header('Content-type: ' . $aStaticExtensions[$extension]);
-                include $path;
+                include $this->fs()->getRootPath().  $path;
                 die();
             }
         }
