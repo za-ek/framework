@@ -173,13 +173,14 @@ class CTemplate extends CBuffer
     }
     public function getWebPath($value)
     {
-        return 'http'.(($_SERVER['SERVER_PORT'] == 443 || isset($_SERVER['HTTPS']) || isset($_SERVER['HTTP_S'])) ? 's' : '' ).'://' . $value;
+        return 'http'.(($_SERVER['SERVER_PORT'] == 443 || isset($_SERVER['HTTPS']) || isset($_SERVER['HTTP_S'])) ? 's' : '' ).'://' . $_SERVER['SERVER_NAME'] .  $value;
     }
     public function clearProp($type)
     {
-        if ( in_array([
-            'css','js','meta'
-        ], $type)) {
+        $type = '_' . $type;
+        if ( in_array($type, [
+            '_css','_js','_meta'
+        ])) {
             $this->{$type} = [];
         }
     }
