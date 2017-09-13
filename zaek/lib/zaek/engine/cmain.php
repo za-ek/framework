@@ -133,7 +133,7 @@ class CMain
      */
     public function autoload($class)
     {
-        @include __DIR__ . '/../../'. str_replace('\\','/',strtolower($class)). '.php';
+        @include_once __DIR__ . '/../../'. str_replace('\\','/',strtolower($class)). '.php';
     }
 
     /**
