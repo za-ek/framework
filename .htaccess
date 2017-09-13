@@ -28,8 +28,12 @@ ErrorDocument 403 /zaek/bin/controller.php
 
     #RewriteCond %{REQUEST_FILENAME} !-d
     #RewriteCond %{REQUEST_FILENAME} !-l
+    RewriteCond %{REQUEST_FILENAME} !\.([\w\d]+)$
     RewriteCond %{REQUEST_FILENAME} !/zaek/bin/controller.php
-    RewriteRule ^(.*)$ /zaek/bin/controller.php [L]
+    RewriteRule ^(.*)$ /zaek/bin/controller.php [END]
+
+    RewriteCond %{REQUEST_FILENAME} .php$
+    RewriteRule ^(.*)$ /zaek/bin/controller.php [END]
 
     # You can specify file that you want by commenting previous
     # line, replace PATH_TO_FILE with you path and uncommenting this two lines:
