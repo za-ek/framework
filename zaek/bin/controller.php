@@ -12,9 +12,15 @@ class CMain extends \zaek\engine\CMain
             $this, 'autoload'
         ]);
 
-        $this->conf()->addFile(__DIR__ . '/../conf/default.ini.php', 'ini');
-        $this->conf()->addFile(__DIR__ . '/../conf/mysqli.ini.php', 'ini');
-        $this->conf()->addFile($_SERVER['DOCUMENT_ROOT'] . '/config.ini.php', 'ini');
+        $conf_dir =__DIR__ . '/../conf/';
+        if ($fs = opendir($conf_dir)) {
+            while (false !== ($file_name = readdir($fs))) {
+                if ( substr($file_name, -8) == '.ini.php' ) {
+                    $this->conf()->addFile($conf_dir . $file_name, 'ini');
+                }
+            }
+            closedir($fs);
+        }
 
         // URI
         $this->conf()->push([
