@@ -48,19 +48,20 @@ class CTemplate extends CBuffer
                 if (strlen($value) > 0) {
                     if (substr($value, 0, 1) == '\\') {
                         $value =
-                            $this->_app->conf()->get('template', 'template_root') . '/' .
-                            $this->_app->conf()->get('template', 'code') .
-                            '/' . $type . '/' . substr($value, 1);
-                    } else if (
-                        (substr($value, 0, 2) != '//') &&
-                        (substr($value, 0, 4) != 'http')
-                    ) {
+                            $this->_app->fs()->getRelativePath(
+                                $this->_app->conf()->get('template', 'template_root') . '/' .
+                                $this->_app->conf()->get('template', 'code') .
+                                '/' . $type . '/' . substr($value, 1)
+                            );
+                    } else if (substr($value, 0, 2) == '//') {
+                        $value = 'http:' . $value;
+                    } else if (substr($value, 0, 5) != 'http:') {
                         $value = $this->_app->conf()->get('template', 'relative_path') . $value;
                     }
                 }
 
-                if ( (substr($value, 0, 4) != 'http') ) {
-                    $value = 'http'.(($_SERVER['SERVER_PORT'] == 443 || isset($_SERVER['HTTPS']) || isset($_SERVER['HTTP_S'])) ? 's' : '' ).'://' . $_SERVER['SERVER_NAME'] . $value;
+                if ( (substr($value, 0, 5) != 'http:') ) {
+                    $value = $this->getWebPath($value);
                 }
 
                 if ($type == 'css') {
@@ -150,8 +151,12 @@ class CTemplate extends CBuffer
     }
     public function img($img)
     {
-        return $this->_app->conf()->get('template', 'template_root') . '/' .
-            $this->_app->conf()->get('template', 'code') . '/images/'. $img;
+        return $this->getWebPath(
+            $this->_app->fs()->getRelativePath(
+                $this->_app->conf()->get('template', 'template_root') . '/' .
+                $this->_app->conf()->get('template', 'code') . '/images/'. $img
+            )
+        );
     }
     public function getCss()
     {
@@ -164,5 +169,18 @@ class CTemplate extends CBuffer
     public function getMeta()
     {
         return $this->_meta;
+    }
+    public function getWebPath($value)
+    {
+        return 'http'.(($_SERVER['SERVER_PORT'] == 443 || isset($_SERVER['HTTPS']) || isset($_SERVER['HTTP_S'])) ? 's' : '' ).'://' . $_SERVER['SERVER_NAME'] .  $value;
+    }
+    public function clearProp($type)
+    {
+        $type = '_' . $type;
+        if ( in_array($type, [
+            '_css','_js','_meta'
+        ])) {
+            $this->{$type} = [];
+        }
     }
 }

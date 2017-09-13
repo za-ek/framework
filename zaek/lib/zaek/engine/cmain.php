@@ -99,14 +99,19 @@ class CMain
      * Подключает файл с областью видимости приложения
      *
      * @param $file
+     * @param bool $bRepeat - может быть подключен второй раз
      * @return mixed
      * @throws CException
      */
-    public function includeFile($file)
+    public function includeFile($file, $bRepeat = true)
     {
         // TODO: Проверка пути файла
         if ( @file_exists($file) ) {
-            return include $file;
+            if ( $bRepeat ) {
+                return include $file;
+            } else {
+                return include_once $file;
+            }
         } else {
             throw new CException('FILE_NOT_FOUND (CMain::includeFile) ['.$file.']');
         }
@@ -133,7 +138,7 @@ class CMain
      */
     public function autoload($class)
     {
-        @include __DIR__ . '/../../'. str_replace('\\','/',strtolower($class)). '.php';
+        @include_once __DIR__ . '/../../'. str_replace('\\','/',strtolower($class)). '.php';
     }
 
     /**
