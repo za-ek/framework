@@ -1,7 +1,7 @@
 <?php
 namespace PHPUnit\Framework;
 
-include __DIR__ . '/../bin/controller.php';
+include_once __DIR__ . '/../bin/controller.php';
 
 try {
     if (class_exists('PHPUnit_Framework_TestCase')) {
