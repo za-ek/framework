@@ -53,15 +53,14 @@ class CTemplate extends CBuffer
                                 $this->_app->conf()->get('template', 'code') .
                                 '/' . $type . '/' . substr($value, 1)
                             );
-                    } else if (
-                        (substr($value, 0, 2) != '//') &&
-                        (substr($value, 0, 4) != 'http')
-                    ) {
+                    } else if (substr($value, 0, 2) == '//') {
+                        $value = 'http:' . $value;
+                    } else if (substr($value, 0, 5) != 'http:') {
                         $value = $this->_app->conf()->get('template', 'relative_path') . $value;
                     }
                 }
 
-                if ( (substr($value, 0, 4) != 'http') ) {
+                if ( (substr($value, 0, 5) != 'http:') ) {
                     $value = $this->getWebPath($value);
                 }
 
