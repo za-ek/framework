@@ -59,6 +59,8 @@ class CBuffer
      */
     private $_enabled = true;
 
+    private $_level = -1;
+
     /**
      * @en Callback function list
      * @es Lista de funciones de callback
@@ -82,6 +84,7 @@ class CBuffer
     public function start ()
     {
         ob_start(array($this, 'callbackEnd'));
+        $this->_level = ob_get_level();
         return $this;
     }
 
@@ -187,35 +190,40 @@ class CBuffer
      */
     public function end ()
     {
-        $this->_content = \ob_get_clean();
+        if ( $this->_level == ob_get_level() ) {
+            $this->_content = \ob_get_clean();
 
-        foreach($this->_params as $k => $v) {
-            try {
-                if(is_callable($v)) {
+            foreach ($this->_params as $k => $v) {
+                try {
+                    if (is_callable($v)) {
+                        $buffer = new CBuffer();
+                        $buffer->start();
+
+                        call_user_func_array($v, array($this->_callable_params[$k]));
+
+                        $buffer->end();
+                        $this->_params[$k] = $buffer->getContent();
+                    }
+                } catch (CException $e) {
+
+                }
+                if (array_key_exists($k, $this->_cb)) {
                     $buffer = new CBuffer();
                     $buffer->start();
 
-                    call_user_func_array($v, array($this->_callable_params[$k]));
+                    call_user_func_array($this->_cb[$k], array($this->_params[$k]));
 
                     $buffer->end();
                     $this->_params[$k] = $buffer->getContent();
                 }
-            } catch ( CException $e ) {
-
             }
-            if(array_key_exists($k, $this->_cb)) {
-                $buffer = new CBuffer();
-                $buffer->start();
 
-                call_user_func_array($this->_cb[$k], array($this->_params[$k]));
-
-                $buffer->end();
-                $this->_params[$k] = $buffer->getContent();
-            }
+            $this->_treatContent();
+            $this->disable();
+            $this->_started = false;
+        } else {
+            throw new CException('INCORRECT_BUFFER_END_ORDER');
         }
-
-        $this->_treatContent();
-        $this->disable();
 
         return $this->_content;
     }
