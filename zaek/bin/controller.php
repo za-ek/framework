@@ -28,6 +28,16 @@ class CMain extends \zaek\engine\CMain
                 'uri' => $_SERVER["REQUEST_URI"] ?? $_SERVER["SCRIPT_NAME"]
             ]
         ]);
+
+        // Панель управления AdminLTE
+        if ( strpos($this->conf()->get('request', 'uri'), '/zaek/admin/') === 0 ) {
+            $this->conf()->push([
+                'template' => [
+                    'code' => 'adminlte',
+                    'use_template' => true
+                ]
+            ]);
+        }
     }
 
     public function data()
