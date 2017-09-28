@@ -224,7 +224,7 @@ $tpl->addJs('\main.js');
     <div class="content-wrapper">
         <?php
         try {
-            $this->includeFile($this->route($this->conf()->get('request', 'uri')));
+            $this->includeRunFile();
         } catch ( \zaek\kernel\CException $e ) {
             echo $e->getMessage();
         }

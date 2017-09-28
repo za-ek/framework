@@ -19,6 +19,7 @@ class CMain
     protected $_data = null;
     protected $_user = null;
     protected $_dic = null;
+    protected $_result = null;
     /**
      * Объект конфигурации
      * @return CConfigList
@@ -76,23 +77,43 @@ class CMain
      */
     public function run($bShow = true)
     {
-        if ( $this->conf()->get('template', 'use_template') ) {
+        if ( $this->conf()->get('template', 'use_buffer') ) {
             $this->template()->start();
-            $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
-                $this->conf()->get('template', 'code') . '/template.php');
+
+            if ( $this->conf()->get('template', 'use_template') ) {
+                $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
+                    $this->conf()->get('template', 'code') . '/template.php');
+            } else {
+                $this->includeRunFile();
+            }
 
             $result = $this->template()->end();
 
             if ( $bShow ) {
                 echo $result;
             }
-
         } else {
-            $file = $this->route($this->conf()->get('request', 'uri'));
-            $result = $this->includeFile($file);
+            if ( $this->conf()->get('template', 'use_template') ) {
+                $result = $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
+                    $this->conf()->get('template', 'code') . '/template.php');
+            } else {
+                $result = $this->includeRunFile();
+            }
         }
 
         return $result;
+    }
+
+    public function includeRunFile()
+    {
+        $result = $this->includeFile($this->route($this->conf()->get('request', 'uri')));
+        $this->_result = $result;
+        return $result;
+    }
+
+    public function getResult()
+    {
+        return $this->_result;
     }
 
     /**
