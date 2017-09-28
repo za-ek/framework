@@ -7,9 +7,12 @@
             <div class="box-body">
                 <table class="table table-hover table-row-click">
                     <tbody>
-                    <tr data-source="zaek">
-                        <td>Расширения zaek</td>
-                    </tr>
+                        <tr data-source="zaek"><td>Расширения zaek</td></tr>
+                    <?php
+                    if ( file_exists(__DIR__ . '/list.php') ) {
+                        $this->includeFile(__DIR__ . '/list.php');
+                    }
+                    ?>
                     </tbody>
                 </table>
             </div>
