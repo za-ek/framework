@@ -3,14 +3,14 @@ $app = new CMain;
 
 $app->conf()->push([
     'template' => [
-        'use_template' => true,
-        'code' => 'empty'
+        'use_template' => false,
     ]
 ]);
 if ( isset($_REQUEST['zAjaxType']) && $_REQUEST['zAjaxType'] == 'json' ) {
     try {
         echo json_encode([
             'result' => $app->run(false),
+            'content' => $app->template()->getContent(),
             // Сообщение об ошибке
             'error' => false,
             // Код ошибки
@@ -24,6 +24,7 @@ if ( isset($_REQUEST['zAjaxType']) && $_REQUEST['zAjaxType'] == 'json' ) {
             ),
             'params_origin' => (isset($_POST['params']) ? $_POST['params'] : array()),
             'widget_id' => isset($_REQUEST['widget_id']) ? $_REQUEST['widget_id'] : '',
+            'url' => $app->conf()->get('request', 'uri')
         ]);
     } catch ( \zaek\kernel\CException $e ) {
         echo json_encode([
@@ -36,6 +37,7 @@ if ( isset($_REQUEST['zAjaxType']) && $_REQUEST['zAjaxType'] == 'json' ) {
             'error_params' => $e->getAdd(),
             'params_origin' => (isset($_POST['params']) ? $_POST['params'] : array()),
             'widget_id' => isset($_REQUEST['widget_id']) ? $_REQUEST['widget_id'] : '',
+            'url' => $app->conf()->get('request', 'uri')
         ]);
     }
 } else {
