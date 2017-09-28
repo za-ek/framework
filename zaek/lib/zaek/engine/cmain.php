@@ -81,16 +81,16 @@ class CMain
             $this->template()->start();
 
             if ( $this->conf()->get('template', 'use_template') ) {
-                $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
+                $result = $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
                     $this->conf()->get('template', 'code') . '/template.php');
             } else {
-                $this->includeRunFile();
+                $result = $this->includeRunFile();
             }
 
-            $result = $this->template()->end();
+            $this->template()->end();
 
             if ( $bShow ) {
-                echo $result;
+                echo $this->template()->getContent();
             }
         } else {
             if ( $this->conf()->get('template', 'use_template') ) {
@@ -103,7 +103,6 @@ class CMain
 
         return $result;
     }
-
     public function includeRunFile()
     {
         $result = $this->includeFile($this->route($this->conf()->get('request', 'uri')));
