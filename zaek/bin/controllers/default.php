@@ -43,17 +43,6 @@ $app = new class extends CMain {
     }
 };
 
-
-// Панель управления AdminLTE
-if ( strpos($app->conf()->get('request', 'uri'), '/zaek/admin/') === 0 ) {
-    $app->conf()->push([
-        'template' => [
-            'code' => 'adminlte',
-            'use_template' => true
-        ]
-    ]);
-}
-
 try {
     $app->run();
 } catch ( \zaek\kernel\CException $e ) {
