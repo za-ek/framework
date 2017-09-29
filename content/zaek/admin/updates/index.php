@@ -8,6 +8,7 @@
                 <table class="table table-hover table-row-click">
                     <tbody>
                         <tr data-source="zaek"><td>Расширения zaek</td></tr>
+                        <tr data-source="github"><td>GitHub</td></tr>
                     <?php
                     if ( file_exists(__DIR__ . '/list.php') ) {
                         $this->includeFile(__DIR__ . '/list.php');
@@ -39,7 +40,7 @@
             $('#update_detail > .box > .box-body').zAjax({
                 url: '/zaek/admin/updates/types/' + t + '.php'
             }, function(r) {
-                $('#update_detail .box-body').html(r.result);
+                $('#update_detail .box-body').html(r.content);
                 $('#update_detail .box-title').html(r.page_param.title);
             });
         });
