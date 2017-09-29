@@ -55,12 +55,12 @@ class CTemplate extends CBuffer
                             );
                     } else if (substr($value, 0, 2) == '//') {
                         $value = 'http:' . $value;
-                    } else if (substr($value, 0, 5) != 'http:') {
+                    } else if (substr($value, 0, 5) != 'http:' && substr($value, 0, 6) != 'https:') {
                         $value = $this->_app->conf()->get('template', 'relative_path') . $value;
                     }
                 }
 
-                if ( (substr($value, 0, 5) != 'http:') ) {
+                if ( (substr($value, 0, 5) != 'http:') && (substr($value, 0, 6) != 'https:') ) {
                     $value = $this->getWebPath($value);
                 }
 
