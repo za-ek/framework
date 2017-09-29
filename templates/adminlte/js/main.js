@@ -87,8 +87,6 @@ var fixed_box = (function() {
 });
 
 var zAjax_finish = (function(func, a,b,c) {
-    $('#' + a.widget_id).closest('.box').find('.overlay').hide();
-
     if ( func ) {
         var el = func(a,b,c);
         if ( a.widget_id ) {
@@ -100,13 +98,14 @@ var zAjax_finish = (function(func, a,b,c) {
         if ( a.widget_id ) {
             $('#' + a.widget_id)
                 .data('zAjax', a)
-                .html(a.result)
+                .html(a.content)
                 .trigger('zAjax:complete', [a,b,c]);
             $(window).trigger('zAjax_complete:' + a.widget_id, [a,b,c]);
         }
     }
 
     if ( a.widget_id ) {
+        $('#' + a.widget_id).closest('.box').find('.overlay').hide();
         $('#' + a.widget_id).find('*').filter(function() {
             return $(this).attr('data-intro');
         }).each(function() {
@@ -119,7 +118,7 @@ var zAjax_finish = (function(func, a,b,c) {
         $(a.widget_id).trigger('zAjax:complete');
     }
 
-    $(window).trigger('zAjax_finish-' + a.act, ['#' + a.widget_id, a,b,c]);
+    $(window).trigger('zAjax_finish-' + a.url, ['#' + a.widget_id, a,b,c]);
 });
 
 var zAjax = (function(d,func) {
@@ -150,8 +149,8 @@ var zAjax = (function(d,func) {
             if ( a.page_param.css.length > 0 ) {
                 loop_css:while(src = a.page_param.css.shift()) {
                     var cl = d.getElementsByTagName('link');
-                    for ( var i in cl ) {if ( cl[i].href == src ) continue loop_css;}
-                    $("head").append("<link rel='stylesheet' type='text/css' href='"+src+"' />");
+                    for ( var i in cl ) {if ( cl[i].href == src[0] ) continue loop_css;}
+                    $("head").append("<link rel='stylesheet' type='text/css' href='"+src[0]+"' />");
                 }
             }
             var need_wait = false;
@@ -160,16 +159,16 @@ var zAjax = (function(d,func) {
                 document.zLOADING = 0;
                 loop_js : while (src = scripts.shift()) {
                     var sl = document.getElementsByTagName('script');
-                    if ( document.zSCRIPTS.indexOf(src) == -1 ) {
+                    if ( document.zSCRIPTS.indexOf(src[0]) == -1 ) {
                         for (var i in sl) {
-                            if (sl[i].src == src) {
+                            if (sl[i].src == src[0]) {
                                 continue loop_js;
                             }
                         }
                         document.zLOADING++;
                         need_wait = true;
-                        document.zSCRIPTS.push(src);
-                        $.getScript(src, function (q) {
+                        document.zSCRIPTS.push(src[0]);
+                        $.getScript(src[0], function (q) {
                             console.log('finish loading');
                             document.zLOADING--;
                             if (document.zLOADING == 0) {
