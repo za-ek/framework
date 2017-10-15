@@ -169,7 +169,7 @@ class CException extends \Exception
         if ( !$this->_add ) {
             $this->_add = $aFunction['args'];
         }
-        if ( !$this->_func ) {
+        if ( !$this->_func && isset($aFunction['class']) ) {
             $this->_func = [[
                 'type' => 'class_method',
                 'val' => [

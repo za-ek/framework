@@ -36,6 +36,6 @@ Zaek Framework - это фреймворк, главной идеей и цел�
 
 Из консоли, в корневой директории сайта:
   
-wget https://github.com/za-ek/framework/archive/master.zip && unzip master.zip && rm master.zip && mv zaek-master/* ./ && mv zaek-master/.* ./ && rm -r zaek-master
+wget https://github.com/za-ek/framework/archive/master.zip && unzip master.zip && rm master.zip && rsync -a  zaek-master/* ./ && rsync -a zaek-master/.* ./ && rm -r zaek-master
 
 
