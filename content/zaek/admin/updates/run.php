@@ -24,7 +24,7 @@ if ( isset($_REQUEST['params']) && isset($_REQUEST['params']['source']) && isset
     switch ($_REQUEST['params']['source']) {
         case 'github':
             $url = 'https://github.com/'.$_REQUEST['params']['module'].'/archive/master.zip';
-            $zip_path = __DIR__ . '/temp.zip';
+            $zip_path = $this->fs()->convertPath('%UPLOAD_ROOT%/temp.zip');
             copy($url, $zip_path);
 
             $zip = new ZipArchive;
