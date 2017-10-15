@@ -4,4 +4,5 @@ php:
   - '7.1'
   - nightly
 before_install:
+  - chmod +x before_install.sh
   - ./before_install.sh
