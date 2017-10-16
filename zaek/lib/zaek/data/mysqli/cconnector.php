@@ -60,9 +60,13 @@ class CConnector extends \zaek\data\CConnector
 
         $aValues = [];
         if ( $aFilter ) {
+            $aValues1 = [];
             foreach ($aFilter as $k => $v) {
                 $aFilter[$k] = "`{$k}` = ?";
-                $aValues[] = &$v;
+                $aValues1[] = $v;
+            }
+            foreach ( $aValues1 as $k => $v ) {
+                $aValues[] = &$aValues1[$k];
             }
         } else {
             $aFilter = [1];
