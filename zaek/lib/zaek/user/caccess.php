@@ -27,26 +27,100 @@ class CAccess
         return hash('sha256', $login. $salt . $password);
     }
 
+    /**
+     * Аутентификация логином и паролем
+     * @param $login
+     * @param $password
+     * @return bool
+     * @throws CException
+     */
     public function authenticate($login, $password)
     {
-        // Буффер должен быть отключен
-        if ( $this->_app->template()->enabled() ) {
-            throw new CException('CAN_NOT_CHANGE_HEADERS_UNTIL_BUFFER_IS_RUNNING');
-        }
+        $aUser = $this->_app->data()->select('users', ['login' => $login], ['salt'])->fetch();
+        return $this->authenticateBy([
+            'login' => $login,
+            'hash' => $this->hash($login, $password, $aUser[0])
+        ]);
+    }
 
-        $aUser = $this->_app->data()->select('users', ['login' => $login], ['hash','salt','id','login'])->fetch();
+    /**
+     * Аутентификация пользователя найденного по фильтру $aFilter
+     *
+     * @param $aFilter
+     * @return bool
+     * @throws CException
+     */
+    public function authenticateBy($aFilter)
+    {
+        $aUser = $this->_app->data()->select('users', $aFilter, ['login','hash'])->fetch();
 
         if ( $aUser ) {
-            if ( $this->hash($login, $password, $aUser[1]) == $aUser[0] ) {
-                if ( session_status() != PHP_SESSION_ACTIVE ) {
-                    session_start();
-                }
-                // Аутентификация пройдена
-                $_SESSION['z_auth_user'] = [
-                    'id' => $aUser[2],
-                    'login' => $aUser[3],
-                ];
+            // Аутентификация пройдена
+            return $this->_makeAuth($aUser[0],$aUser[1]);
+        } else {
+            throw new CException('USER_NOT_FOUND');
+        }
+    }
+
+    /**
+     * Производит аутентификацию пользователя: сохраняет параметры в cookie,
+     *  использует таблицу "users_auth" с полями id, user_login, user_hash, session_hash,
+     *  date_create, ip
+     *
+     * @param $login
+     * @param $hash
+     * @return bool
+     */
+    protected function _makeAuth($login, $hash)
+    {
+        $oLines = $this->_app->data()->select('users_auth', [
+            'user_login' => $login,
+            'user_hash' => $hash,
+        ], ['id', 'session_hash'], ['date_create' => 'desc']);
+
+        if ( $oLines->getLength() >= $this->_app->conf()->get('user', 'session_cnt_limit') ) {
+            $aSessionHash = $oLines->fetch();
+            $session_hash = $aSessionHash[1];
+
+            $this->_app->data()->update('users_auth', [
+                'date_create' => date('Y-m-d H:i:s'),
+            ], ['id' => $aSessionHash[0]]);
+        } else {
+            $session_hash = substr(
+                str_shuffle(
+                    str_repeat(
+                        $x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                        1
+                    )
+                ),1, 12
+            );
+
+            $this->_app->data()->insert('users_auth', [
+                'user_login' => $login,
+                'user_hash' => $hash,
+                'date_create' => date('Y-m-d H:i:s'),
+                'session_hash' => $session_hash,
+                'ip' => $this->_app->conf()->get('client', 'ip')
+            ]);
+        }
+
+        if ( $session_hash ) {
+            $lt = $this->_app->conf()->get('user', 'session_lifetime');
+            $sd = $this->_app->conf()->get('user', 'session_domain');
+
+            if ( !is_array($sd) ) {
+                $sd = [$sd];
             }
+
+            foreach ( $sd as $domain ) {
+                setcookie('hash', $hash, time() + $lt, '/', $domain, true);
+                setcookie('login', $login, time() + $lt, '/', $domain, true);
+                setcookie('session_hash', $session_hash, time() + $lt, '/', $domain, true);
+            }
+
+            return true;
+        } else {
+            return false;
         }
     }
 
