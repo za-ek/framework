@@ -92,7 +92,7 @@ class CAccess
                         $x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
                         1
                     )
-                ),1, 12
+                ),1, 32
             );
 
             $this->_app->data()->insert('users_auth', [

@@ -132,8 +132,12 @@ class CConnector extends \zaek\data\CConnector
         $stmt = mysqli_prepare($link, $query);
         if ( $stmt ) {
 
+            $aTmp = [];
             foreach ( $aData as $k => $v ) {
-                $aData[$k] = &$v;
+                $aTmp[$k] = $v;
+            }
+            foreach ( $aTmp as $k => $v ) {
+                $aData[$k] = &$aTmp[$k];
             }
 
             call_user_func_array(
