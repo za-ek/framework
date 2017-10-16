@@ -88,7 +88,7 @@ class CConnector extends \zaek\data\CConnector
         }
 
         $query = "SELECT " . implode(',', $aRange) . " FROM {$type} 
-        WHERE " . implode(',', $aFilter) . $order . $limit;
+        WHERE " . implode(' AND ', $aFilter) . $order . $limit;
 
         $stmt = mysqli_prepare($this->getLink(), $query);
         if ( $stmt ) {
