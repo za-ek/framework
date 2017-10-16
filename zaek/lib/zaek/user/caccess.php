@@ -22,7 +22,7 @@ class CAccess
      * @param $salt
      * @return string
      */
-    protected function hash($login, $password, $salt)
+    public function hash($login, $password, $salt)
     {
         return hash('sha256', $login. $salt . $password);
     }
