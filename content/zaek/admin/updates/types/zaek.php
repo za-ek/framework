@@ -18,6 +18,7 @@ $this->template()->setTitle('Модули zaek');
             ?>
         </td>
     </tr>
+    <tr><td>Главный модуль (нестабильная версия)</td><td><a href="#" class="update_module" data-module="za-ek/zaek" data-source="github">Установить</a></td></tr>
     </tbody>
 </table>
 <script>
