@@ -42,6 +42,21 @@ class CAccess
             'hash' => $this->hash($login, $password, $aUser[0])
         ]);
     }
+    /**
+     * Аутентификация email и паролем
+     * @param $email
+     * @param $password
+     * @return bool
+     * @throws CException
+     */
+    public function authenticateByEmail($email, $password)
+    {
+        $aUser = $this->_app->data()->select('users', ['email' => $email], ['salt', 'login'])->fetch();
+        return $this->authenticateBy([
+            'login' => $aUser[1],
+            'hash' => $this->hash($aUser[1], $password, $aUser[0])
+        ]);
+    }
 
     /**
      * Аутентификация пользователя найденного по фильтру $aFilter
@@ -107,15 +122,19 @@ class CAccess
         if ( $session_hash ) {
             $lt = $this->_app->conf()->get('user', 'session_lifetime');
             $sd = $this->_app->conf()->get('user', 'session_domain');
+            $sс = $this->_app->conf()->get('user', 'only_https');
 
             if ( !is_array($sd) ) {
+				if ( !$sd ) {
+					$sd = $this->_app->conf()->get('request','host');
+				}
                 $sd = [$sd];
             }
 
             foreach ( $sd as $domain ) {
-                setcookie('hash', $hash, time() + $lt, '/', $domain, true);
-                setcookie('login', $login, time() + $lt, '/', $domain, true);
-                setcookie('session_hash', $session_hash, time() + $lt, '/', $domain, true);
+                setcookie('hash', $hash, time() + $lt, '/', $domain, $sс);
+                setcookie('login', $login, time() + $lt, '/', $domain, $sс);
+                setcookie('session_hash', $session_hash, time() + $lt, '/', $domain, $sс);
             }
 
             return true;
@@ -126,11 +145,21 @@ class CAccess
 
     public function logout()
     {
-        if ( session_status() != PHP_SESSION_ACTIVE ) {
-            session_start();
-        }
+		$sd = $this->_app->conf()->get('user', 'session_domain');
+		$sс = $this->_app->conf()->get('user', 'only_https');
 
-        unset($_SESSION['z_auth_user']);
+		if ( !is_array($sd) ) {
+			if ( !$sd ) {
+				$sd = $this->_app->conf()->get('request','host');
+			}
+			$sd = [$sd];
+		}
+
+		foreach ( $sd as $domain ) {
+			setcookie('hash', '', 0, '/', $domain, $sс);
+			setcookie('login', '', 0, '/', $domain, $sс);
+			setcookie('session_hash', '', 0, '/', $domain, $sс);
+		}
     }
 
     /**
@@ -149,5 +178,25 @@ class CAccess
         } else {
             return false;
         }
+    }
+	public function isAuthenticated()
+	{
+		$user_hash  = $_COOKIE['hash'] ?? '';
+        $session_hash = $_COOKIE['session_hash'] ?? '';
+        $login = $_COOKIE['login'] ?? '';
+		
+		if($user_hash !== false && $session_hash !== false && $login !== false) {
+			return $this->_app->data()->select('users_auth', ['user_login' => $login, 'user_hash' => $user_hash, 'session_hash' => $session_hash], ['id'], ['date_create' => 'ASC'], 1)->fetch();
+        }
+		
+		return false;
+	}
+	public function getCurrent()
+    {
+        if( $this->isAuthenticated() ) {
+			return $this->_app->data()->select('users', ['login' => $_COOKIE['login']], ['id','email'])->fetch(\zaek\kernel\CTable::FETCH_ASSOC);
+        } else {
+			return false;
+		}
     }
 }
