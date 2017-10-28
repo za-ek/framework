@@ -179,24 +179,23 @@ class CAccess
             return false;
         }
     }
-	public function isAuthenticated()
-	{
-		$user_hash  = $_COOKIE['hash'] ?? '';
+    public function isAuthenticated()
+    {
+	$user_hash  = $_COOKIE['hash'] ?? '';
         $session_hash = $_COOKIE['session_hash'] ?? '';
         $login = $_COOKIE['login'] ?? '';
 		
-		if($user_hash !== false && $session_hash !== false && $login !== false) {
-			return $this->_app->data()->select('users_auth', ['user_login' => $login, 'user_hash' => $user_hash, 'session_hash' => $session_hash], ['id'], ['date_create' => 'ASC'], 1)->fetch();
+        if($user_hash !== false && $session_hash !== false && $login !== false) {
+	    return $this->_app->data()->select('users_auth', ['user_login' => $login, 'user_hash' => $user_hash, 'session_hash' => $session_hash], ['id'], ['date_create' => 'ASC'], 1)->fetch();
         }
-		
-		return false;
-	}
-	public function getCurrent()
+	return false;
+    }
+    public function getCurrent()
     {
         if( $this->isAuthenticated() ) {
-			return $this->_app->data()->select('users', ['login' => $_COOKIE['login']], ['id','email'])->fetch(\zaek\kernel\CTable::FETCH_ASSOC);
+		return $this->_app->data()->select('users', ['login' => $_COOKIE['login']], ['id','login','email'])->fetch(\zaek\kernel\CTable::FETCH_ASSOC);
         } else {
-			return false;
-		}
+		return false;
+	}
     }
 }
