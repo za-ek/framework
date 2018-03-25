@@ -273,7 +273,7 @@ class CConnector extends \zaek\data\CConnector
 
             call_user_func_array(
                 [$stmt, 'bind_param'],
-                array_merge([str_repeat('s', count($aUpdate)+count($aValues))], $aUpdate, $aValues)
+                $this->_refValues(array_merge([str_repeat('s', count($aUpdate)+count($aValues))], $aUpdate, $aValues))
             );
 
             if ( $stmt->execute() ) {
@@ -284,5 +284,11 @@ class CConnector extends \zaek\data\CConnector
         } else {
             throw new CException(mysqli_error($this->getLink()));
         }
+    }
+    private function _refValues($arr){
+        $refs = array();
+        foreach($arr as $key => $value)
+            $refs[$key] = &$arr[$key];
+        return $refs;
     }
 }
