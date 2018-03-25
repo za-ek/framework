@@ -261,19 +261,19 @@ class CConnector extends \zaek\data\CConnector
             $limit = '';
         }
 
-        $query = "UPDATE {$type} SET " . implode(' = ?,', array_keys($aUpdate)) . ' = ? '.
-                " WHERE " . implode(',', $aFilter) . $order . $limit;
+        $query = "UPDATE {$type} SET `" . implode('` = ?,`', array_keys($aUpdate)) . '` = ? '.
+            " WHERE " . implode(' AND ', $aFilter) . $order . $limit;
 
         $stmt = mysqli_prepare($this->getLink(), $query);
 
         if ( $stmt ) {
-            foreach ( $aUpdate as $k => $v1 ) {
-                $aUpdate[$k] = &$v1;
-            }
-
             call_user_func_array(
                 [$stmt, 'bind_param'],
-                $this->_refValues(array_merge([str_repeat('s', count($aUpdate)+count($aValues))], $aUpdate, $aValues))
+                $this->_refValues(array_merge(
+                    [str_repeat('s', count($aUpdate)+count($aValues))],
+                    $aUpdate,
+                    $aValues
+                ))
             );
 
             if ( $stmt->execute() ) {
