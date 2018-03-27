@@ -236,7 +236,7 @@ class CConnector extends \zaek\data\CConnector
         if ( $aFilter ) {
             foreach ($aFilter as $k => $v) {
                 $aFilter[$k] = "`{$k}` = ?";
-                $aValues[] = &$v;
+                $aValues[] = $v;
             }
         } else {
             $aFilter = [1];
@@ -262,7 +262,7 @@ class CConnector extends \zaek\data\CConnector
         }
 
         $query = "UPDATE {$type} SET `" . implode('` = ?,`', array_keys($aUpdate)) . '` = ? '.
-            " WHERE " . implode(' AND ', $aFilter) . $order . $limit;
+                " WHERE " . implode(' AND ', $aFilter) . $order . $limit;
 
         $stmt = mysqli_prepare($this->getLink(), $query);
 
