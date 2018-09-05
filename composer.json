@@ -1,0 +1,7 @@
+{
+    "name": "za-ek/zaek",
+    "description": "za-ek framework",
+    "require": {
+        "php": "^7.2.4"
+    }
+}
