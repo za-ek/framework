@@ -8,7 +8,7 @@ class cconfigTest extends TestCase
     protected function setUp()
     {
         $this->_a_config = ['user' => ['id' => 1]];
-        $this->_config = new \Zaek\Kernel\CConfig($this->_a_config);
+        $this->_config = new \Zaek\Kernel\Config($this->_a_config);
     }
     public function testIsDefined()
     {
@@ -23,7 +23,7 @@ class cconfigTest extends TestCase
     {
         $this->assertEquals(1, $this->_config->getValue('user','id'));
 
-        $this->expectException(\Zaek\Kernel\CException::class);
+        $this->expectException(\Zaek\Kernel\Exception\ConfigValueNotSet::class);
         $this->_config->getValue('user', 'name');
     }
     public function testOverride()

@@ -5,10 +5,10 @@ class cconfiglistTest extends TestCase
 {
     public function testDemand()
     {
-        $list = new \Zaek\Kernel\CConfigList();
+        $list = new \Zaek\Kernel\ConfigList();
         $list->addFile(__DIR__ . '/../../../conf/default.ini.php', 'ini');
 
-        $list->push(new \Zaek\Kernel\CConfig([
+        $list->push(new \Zaek\Kernel\Config([
             'template' => [
                 'path' => '%DOCUMENT_ROOT%/templates'
             ]
@@ -17,15 +17,13 @@ class cconfiglistTest extends TestCase
         $this->assertEquals('%DOCUMENT_ROOT%/templates', $list->get('template','path'));
         $this->assertEquals(null, $list[0][2]);
 
-        $this->assertEquals('default', $list->get('template','code'));
-
     }
     public function testCorrectOrder()
     {
-        $list = new \Zaek\Kernel\CConfigList();
+        $list = new \Zaek\Kernel\ConfigList();
         $list->addFile(__DIR__ . '/../../../conf/default.ini.php', 'ini');
 
-        $list->push(new \Zaek\Kernel\CConfig([
+        $list->push(new \Zaek\Kernel\Config([
             'template' => [
                 'path' => '%DOCUMENT_ROOT%/templates',
                 'use_buffer' => false
@@ -35,16 +33,15 @@ class cconfiglistTest extends TestCase
         $this->assertEquals('%DOCUMENT_ROOT%/templates', $list->get('template','path'));
         $this->assertEquals(null, $list[0][2]);
 
-        $this->assertEquals('default', $list->get('template','code'));
         $this->assertEquals(false, $list->get('template','use_buffer'));
 
     }
     public function testInsert()
     {
-        $list = new \Zaek\Kernel\CConfigList();
+        $list = new \Zaek\Kernel\ConfigList();
         $list->addFile(__DIR__ . '/../../../conf/default.ini.php', 'ini');
 
-        $list->push(new \Zaek\Kernel\CConfig([
+        $list->push(new \Zaek\Kernel\Config([
             'template' => [
                 'path' => '%DOCUMENT_ROOT%/templates',
                 'use_buffer' => false
@@ -54,7 +51,6 @@ class cconfiglistTest extends TestCase
         $this->assertEquals('%DOCUMENT_ROOT%/templates', $list->get('template','path'));
         $this->assertEquals(null, $list[0][2]);
 
-        $this->assertEquals('default', $list->get('template','code'));
         $this->assertEquals(false, $list->get('template','use_buffer'));
 
         $list->push([
@@ -72,7 +68,7 @@ class cconfiglistTest extends TestCase
     }
     public function issetTest()
     {
-        $list = new \Zaek\Kernel\CConfigList();
+        $list = new \Zaek\Kernel\ConfigList();
 
         $list->push([
             'template' => [

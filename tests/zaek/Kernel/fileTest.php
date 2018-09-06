@@ -15,7 +15,7 @@ function arrays_are_similar($a, $b) {
     return true;
 }
 
-class FileTest extends \Zaek\Kernel\CFile
+class FileTest extends \Zaek\Kernel\File
 {
     public function convertPath($file)
     {
@@ -32,7 +32,7 @@ class FileTest extends \Zaek\Kernel\CFile
         return false;
     }
 }
-class AppTest extends \Zaek\Engine\CMain
+class AppTest extends \Zaek\Engine\Main
 {
     public function fs()
     {
@@ -47,16 +47,19 @@ class AppTest extends \Zaek\Engine\CMain
 class cfileTest extends TestCase
 {
     /**
-     * @var \Zaek\Engine\CMain
+     * @var \Zaek\Engine\Main
      */
     protected $_app;
+    /**
+     * @var \Zaek\Engine\Main
+     */
     protected $_app_local;
 
     protected function setUp()
     {
         $_SERVER['DOCUMENT_ROOT'] = realpath(__DIR__ . '/../../../../');
 
-        $this->_app = new \Zaek\Engine\CMain();
+        $this->_app = new \Zaek\Engine\Main();
         $this->_app->conf()->push([
             'fs' => [
                 'root' => $_SERVER['DOCUMENT_ROOT'] . '/zaek/tests/',
@@ -126,26 +129,7 @@ class cfileTest extends TestCase
     {
         $this->assertEquals(true, is_resource($this->fs()->getStream('%DOCUMENT_ROOT%/test_dir/1/tmp', $this->fs()::MODE_R)));
     }
-    public function testCheckRules()
-    {
-        $this->expectException(\Zaek\Kernel\CException::class);
-        $this->_app_local->fs()->getContent('%DOCUMENT_ROOT%/test_dir/1/tmp');
-    }
-    public function testUri()
-    {
-        $this->assertEquals($this->fs()->convertPath('%DOCUMENT_ROOT%/test_dir/index.php'), $this->fs()->fromUri(
-            '/test_dir/',
-            $this->_app
-        ));
-        $this->assertEquals($this->fs()->convertPath('%DOCUMENT_ROOT%/test_dir/index.php'), $this->fs()->fromUri(
-            '/test_dir/index.php',
-            $this->_app
-        ));
-        $this->assertEquals($this->fs()->convertPath('%DOCUMENT_ROOT%/test_dir/index.php'), $this->fs()->fromUri(
-            '/test_dir/index.php?a=b',
-            $this->_app
-        ));
-    }
+
     public function testExtension()
     {
         $this->assertEquals('php', $this->fs()->extension('/index.php'));

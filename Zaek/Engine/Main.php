@@ -1,12 +1,9 @@
 <?php
 namespace Zaek\Engine;
 
-use Zaek\Data\Cluster;
-use Zaek\Data\ini\Connector;
-use Zaek\Kernel\Buffer;
+use Zaek\Data\Ini\Connector;
 use Zaek\Kernel\ConfigList;
 use Zaek\Kernel\Dictionary;
-use Zaek\Kernel\Exception;
 use Zaek\Kernel\File;
 use Zaek\Kernel\Request;
 use Zaek\User\User;

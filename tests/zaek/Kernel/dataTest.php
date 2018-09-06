@@ -4,18 +4,18 @@ use PHPUnit\Framework\TestCase;
 class dataTest extends TestCase
 {
     /**
-     * @var \Zaek\Engine\CMain
+     * @var \Zaek\Engine\Main
      */
     public $_app;
     public function setUp()
     {
-        $this->_app = new class extends \Zaek\Engine\CMain
+        $this->_app = new class extends \Zaek\Engine\Main
         {
             public function fs()
             {
                 if ( is_null($this->_fs) ) {
                     $app = $this;
-                    return new class ($app) extends \Zaek\Kernel\CFile
+                    return new class ($app) extends \Zaek\Kernel\File
                     {
                         public function getContent($file) {
                             return "

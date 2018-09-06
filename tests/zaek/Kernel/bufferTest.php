@@ -5,15 +5,16 @@ class bufferTest extends TestCase
 {
     public function testNested()
     {
-        $buffer = new \Zaek\Kernel\CBuffer();
-        $buffer_nested = new \Zaek\Kernel\CBuffer();
+        $buffer = new \Zaek\Kernel\Buffer();
+        $buffer_nested = new \Zaek\Kernel\Buffer();
 
         $buffer->start();
         $buffer_nested->start();
+
         try {
             $buffer->end();
             $this->assertTrue(true, false);
-        } catch ( \Zaek\Kernel\CException $e ) {
+        } catch ( \Zaek\Kernel\Exception\IncorrectBufferOrder $e ) {
             $this->assertTrue(true, true);
         }
 

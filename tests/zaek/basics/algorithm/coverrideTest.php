@@ -18,7 +18,7 @@ class coverrideTest extends TestCase
     protected $_override;
     protected function setUp()
     {
-        $override = new \Zaek\basics\Algorithm\COverride();
+        $override = new \Zaek\basics\Algorithm\Override();
         $override->push(new testObject(1));
         $override->push(new testObject(2));
         $override->push(new testObject(4));

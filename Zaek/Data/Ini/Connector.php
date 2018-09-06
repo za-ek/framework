@@ -1,6 +1,7 @@
 <?php
 namespace Zaek\Data\Ini;
 
+use Zaek\Kernel\File;
 use Zaek\Kernel\Table;
 
 class Connector extends \Zaek\Data\Connector
@@ -109,7 +110,26 @@ class Connector extends \Zaek\Data\Connector
      */
     public function insert($type, $aData)
     {
-        // TODO: Implement insert() method.
+        $file = $this->_app->fs()->convertPath("%DATA_ROOT%/{$type}.ini.php");
+        if($this->_app->fs()->checkRules($file, File::MODE_W)) {
+            // fields
+            $fs = fopen($file, File::MODE_WR);
+            if(!$fs) {
+                throw new \RuntimeException('Type file not found');
+            }
+
+            $fields = [];
+            while($line = fgets($fs)) {
+                if(strpos($line, 'fields') === 0) {
+                    // Строка колонки
+                    $fields = explode(';', parse_ini_string($line));
+                    break;
+                }
+            }
+            fclose($fs);
+
+        }
+        var_dump($fields);
     }
 
     /**

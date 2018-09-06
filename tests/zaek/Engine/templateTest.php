@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 class templateTest extends TestCase
 {
     /**
-     * @var \Zaek\Engine\CMain
+     * @var \Zaek\Engine\Main
      */
     protected $_app;
 
@@ -14,7 +14,7 @@ class templateTest extends TestCase
         $_SERVER['SERVER_PORT'] = 80;
         $_SERVER['SERVER_NAME'] = 'localhost';
 
-        $this->_app = new \Zaek\Engine\CMain();
+        $this->_app = new \Zaek\Engine\Main();
         $this->_app->conf()->push([
             'fs' => [
                 'root' => $_SERVER['DOCUMENT_ROOT'],
