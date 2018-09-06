@@ -2,24 +2,10 @@
 namespace Zaek\Kernel;
 
 use Zaek\Engine\Main;
-use Zaek\Kernel\Exception\ConfigSectionNotSet;
-use Zaek\Kernel\Exception\ConfigValueNotSet;
-use Zaek\Kernel\Exception\CouldNotCreateFile;
 use Zaek\Kernel\Exception\FileNotExists;
 
 class File
 {
-    // File types
-    const TYPE_TEXT  = 0x000;
-    const TYPE_XML   = 0x001;
-    const TYPE_INI   = 0x010;
-    const TYPE_LANG  = 0x011;
-    const TYPE_CONF  = 0x100;
-    const TYPE_JSON  = 0x101;
-    const TYPE_MIX   = 0x111;
-    const TYPE_RAW   = 0x1000;
-    const TYPE_ARR   = 0x1001;
-
     // Mode options
     const MODE_R  = 1; // 1
     const MODE_RW = 3; // 11
@@ -46,25 +32,8 @@ class File
         "blksize" => null, "blocks" => null
     );
 
-    // Errors
-    const E_ACCESS_DENIED    =  4;
-    const E_NOT_EXISTS       =  5;
-    const E_OPENED           =  6;
-    const E_EXISTS           =  7;
-
     /**
-     * @en Framework root directory
-     * @es Ruta a directoria del framework
-     * @ru Путь к директории фреймворка
-     *
-     * @var string
-     */
-    private $_framework_root = false;
-
-    /**
-     * @en Site root
-     * @es Directorio raíz del sitio
-     * @ru Корень файловой системы сайта
+     * Project root directory
      *
      * @var string
      */
@@ -72,18 +41,46 @@ class File
 
     protected $_conf;
 
+    private $_map;
+
     /**
-     * CFile constructor.
+     * File constructor.
      * @param Main $app
      */
     public function __construct(Main $app)
     {
         $this->_conf = $app->conf();
+
+        $root = $this->getRootPath();
+
+        $this->_map = [
+            [
+                '%DOCUMENT_ROOT%',
+            ],
+            [
+                $root ,
+            ]
+        ];
     }
+
     /**
-     * @en Return path to root directory
-     * @es Devuelve la ruta al directorio raíz del sitio
-     * @ru Возвращает путь к корню сайта
+     * Add path conversion (%DOCUMENT_ROOT% => '/')
+     *
+     * @param $code
+     * @param $path
+     */
+    public function registerPath($code, $path)
+    {
+        if(in_array($code, $this->_map[0])) {
+            throw new \DomainException("Code already exist <{$code}>");
+        }
+
+        $this->_map[0][] = $code;
+        $this->_map[1][] = $path;
+    }
+
+    /**
+     * Return project root directory
      *
      * @return string
      */
@@ -99,108 +96,35 @@ class File
 
         return $this->_root;
     }
-    /**
-     * @en Return path to framework root directory
-     * @es Devuelve la ruta al directorio raíz del framework
-     * @ru Возвращает путь к директории фреймворка
-     *
-     * @return string
-     */
-    public function getFrameworkRootPath()
-    {
-        if ( $this->_framework_root === false ) {
-            try {
-                $this->_framework_root = $this->_conf->get('fs', 'framework_root');
-            } catch (ConfigSectionNotSet $e) {
-                $this->_framework_root = $this->getRootPath();
-            } catch (ConfigValueNotSet $e) {
-                $this->_framework_root = $this->getRootPath();
-            }
-
-            if (substr($this->_framework_root, -1) == '/') {
-                $this->_framework_root = substr($this->_framework_root, 0, -1);
-            }
-        }
-
-        return $this->_framework_root;
-    }
 
     /**
      * Returns file path by replacing constants:
      *
      * %DOCUMENT_ROOT%          Document root path (it`s not the same as $_SERVER["DOCUMENT_ROOT"]) (/)
-     * %SYSTEM_ROOT%            Framework root path (/zaek)
-     * %TEMPLATE_ROOT%          Template root path (/zaek/tpl)
-     * %PAGE_TEMPLATE_ROOT%     Page templates path (/zaek/tpl/pages)
-     * %WIDGET_TEMPLATE_ROOT%   Widget templates path (/zaek/tpl/widgets)
-     * %CACHE_ROOT%             Cache directory (/zaek/tmp/cache)
-     * %LANGUAGE_ROOT%          Language directory (/zaek/local)
-     * %WIDGET_ROOT%            Widget directory (/zaek/bin/widgets)
-     * %MODULES_ROOT%           Language directory (/zaek/lib)
-     * %UPLOAD_ROOT%            Language directory (/zaek/tmp/upload)
      *
      * @param string $file - path with constants
      * @return string
      */
-    public function convertPath($file)
+    public function convert($path)
     {
-        $root = $this->getRootPath();
-        $framework_root = $this->getFrameworkRootPath();
-
         return str_replace(
-            array(
-                '%DOCUMENT_ROOT%',
-                '%SYSTEM_ROOT%',
-                '%TEMPLATE_ROOT%',
-                '%PAGE_TEMPLATE_ROOT%',
-                '%WIDGET_TEMPLATE_ROOT%',
-
-                '%ADMIN_ROOT%',
-                '%DATA_ROOT%',
-                '%CACHE_ROOT%',
-                '%LANGUAGE_ROOT%',
-                '%WIDGET_ROOT%',
-
-                '%MODULES_ROOT%',
-                '%UPLOAD_ROOT%',
-
-                '%NOTIFICATION_ROOT%',
-            ),
-            array(
-                $root ,
-                $framework_root  . '/zaek',
-                $framework_root  . '/zaek/tpl',
-                $framework_root  . '/zaek/tpl/pages',
-                $framework_root  . '/zaek/tpl/widgets',
-
-                $framework_root  . '/content/zaek/admin',
-                $framework_root  . '/zaek/tmp/data',
-                $framework_root  . '/zaek/tmp/cache',
-                $framework_root  . '/zaek/local',
-                $framework_root  . '/zaek/bin/widgets',
-
-                $framework_root  . '/zaek/lib',
-                $framework_root  . '/zaek/tmp/upload',
-
-                $framework_root  . '/zaek/bin/notifications',
-            ),
-            $file
+            $this->_map[0],
+            $this->_map[1],
+            $path
         );
     }
 
 
     /**
-     * @en Return file content
-     * @es Devuelve contenido del fichero
-     * @ru Возвращает содержимое файла
+     * Return file content
      *
      * @param $file
      * @return string
      */
-    public function getContent ($file)
+    public function getContent ($file_path)
     {
-        if($this->checkRules($file, $this::MODE_R, true)) {
-            $content = file_get_contents($this->convertPath($file));
+        if($this->checkRules($file_path, $this::MODE_R, true)) {
+            $content = file_get_contents($this->convert($file_path));
             return $content;
         } else {
             return '';
@@ -208,48 +132,32 @@ class File
     }
 
     /**
-     * @en Returns resource pointer for file $file with mode $mode
+     * Return resource pointer for file $file with mode $mode
      * throws exception on:
      * 1. File not exists
      * 2. File access denied by external rules
      * 3. File access denied by internal rules
      *
-     * @ru Возвращает указатель на открытый поток файла, возможные исключения:
-     * 1. Файл не существует
-     * 2. Доступ запрещён внешними правами доступа
-     * 3. Доступ запрещён правами доступа файловой системы
-     *
-     * @es Devuelve un recurso de puntero a fichero si tiene éxito o lanza una excepción si:
-     * 1. El archivo no existe
-     * 2. El sistema de archivos no permite abrir este fichero
-     * 3. No se permite abrir este fichero por reglas externas
-     *
-     * @param string $file - file path
+     * @param string $file_path - file path
      * @param string $mode - file open mode
      *
      * @return resource|null
      */
-    public function getStream ($file, $mode)
+    public function getStream ($file_path, $mode)
     {
-        $file = $this->convertPath($file);
+        $file_path = $this->convert($file_path);
 
-        if(strlen($file) == 0) return NULL;
+        if(strlen($file_path) == 0) return NULL;
 
-        if($this->checkRules($file, $mode)) {
-            return fopen($file, $this->getSMode($mode));
+        if($this->checkRules($file_path, $mode)) {
+            return fopen($file_path, $this->getSMode($mode));
         } else {
             return NULL;
         }
     }
 
     /**
-     * @en Checks file accessibility it returns true by default and should be overrided
-     *
-     * @es Comprueba accesibilidad para el fichero $file en modo $mode, debe pasar por alto
-     *
-     * @ru Проверяет доступ к файлу на уровне внешних прав доступа, используется как
-     * заглушка - следует переопределить в дочернем классе
-     *
+     * Checks file accessibility it returns true by default and should be overrided
      *
      * @param string $file - file path
      * @param int $mode - file access mode
@@ -263,6 +171,12 @@ class File
             ) );
     }
 
+    /**
+     * Return absolute path of given file path (replace "..", "//")
+     *
+     * @param $path
+     * @return string
+     */
     public function getAbsolute($path)
     {
         $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
@@ -280,23 +194,23 @@ class File
     }
 
     /**
-     * @param $f
+     * Return relative path (web path) for given file path
+     *
+     * @param $file_path
      * @return mixed
      */
-    public function getRelativePath($f)
+    public function getWebPath($file_path)
     {
-        if ( !$this->getRootPath() || strpos( $f, $this->getRootPath()) === 0 ) {
-            $f = substr($f, strlen($this->getRootPath()));
+        if ( !$this->getRootPath() || strpos( $file_path, $this->getRootPath()) === 0 ) {
+            $file_path = substr($file_path, strlen($this->getRootPath()));
         }
 
-        return $f;
+        return $file_path;
     }
 
     /**
-     * @en Checks file permissions for user with $uid and $gid in $mode mode
+     * Checks file permissions for user with $uid and $gid in $mode mode
      * Using current user by default for $uid and $gid values
-     *
-     * @ru Проверяет наличие доступа к файлу на уровне прав доступа файловой системы
      *
      * @param string $file - path to file
      * @param string $mode - required permissions
@@ -306,14 +220,17 @@ class File
      */
     public function checkExtRules ($file, $mode, $gid = null, $uid = null)
     {
-        if ( is_null ($gid ) ) {
+        if(!extension_loaded('posix')) {
+            return true;
+        }
+
+        if (is_null($gid)) {
             $gid = posix_getgid();
         }
 
-        if ( is_null ($uid ) ) {
+        if (is_null($uid)) {
             $uid = posix_getuid();
         }
-
 
         if ( !is_null($gid) && !is_null($uid) ) {
             if ($mode & self::MODE_W && !is_dir($file)) {
@@ -360,40 +277,28 @@ class File
     }
 
     /**
-     * @en Check external & internal rules for file $file in mode $mode
+     * Check external & internal rules for file $file in mode $mode
      * $b - throw an exception if file does not exist
      *
-     * @es Comprueba el acceso a un fichero $file en modo $mode
-     * tanto por sistema de archivos como por reglas externos,
-     * el parametro $b indica necesidad de existencia del fichero
-     * (lanza excepción si el fichero no existe)
-     *
-     * @ru Проверяет внешние права и права файловой системы
-     * для доступа к файлу $file в режиме $mode, если флаг $b задан
-     * как true - выбросит исключение если файл не существует
-     *
-     * @param string $file - file path
+     * @param string $file_path - file path
      * @param string $mode - file access mode
      * @param bool $b - check if file exist
      *
      * @return bool
      */
-    public function checkRules($file, $mode, $b = false)
+    public function checkRules($file_path, $mode, $b = false)
     {
-        $file = $this->convertPath($file);
+        $file_path = $this->convert($file_path);
 
-        if($b && !file_exists($file)) {
-            throw FileNotExists::create($file);
+        if($b && !file_exists($file_path)) {
+            throw FileNotExists::create($file_path);
         }
 
-        return $this->checkFileRules($file, $mode) && $this->checkExtRules($file, $mode);
+        return $this->checkFileRules($file_path, $mode) && $this->checkExtRules($file_path, $mode);
     }
 
     /**
-     * @en Return file access mode string base on class constants MODE_*
-     * @es Devuelve una cadena de modo de acceso a un fichero a partir de las constantes
-     * de clase MODE_*
-     * @ru Возвращает строку режима доступа к файлу из констант класса MODE_*
+     * Return file access mode string base on class constants MODE_*
      *
      * @param string $mode
      * @return string
@@ -424,79 +329,79 @@ class File
         return $s;
     }
 
-    public function extension($str)
+    /**
+     * Return file extension of given path
+     *
+     * @param $file_path
+     * @return bool|string
+     */
+    public function extension($file_path)
     {
-        if(strrpos($str, ".", strrpos($str, DIRECTORY_SEPARATOR)) !== false) {
-            return substr($str, strrpos($str, ".", strrpos($str, DIRECTORY_SEPARATOR)) + 1);
+        if(strrpos($file_path, ".", strrpos($file_path, DIRECTORY_SEPARATOR)) !== false) {
+            return substr($file_path, strrpos($file_path, ".", strrpos($file_path, DIRECTORY_SEPARATOR)) + 1);
         } else {
             return false;
         }
     }
 
     /**
-     * Возвращает структуру файловой системы в необходимом формате
+     * Return list of files and directories on a given path
      *
-     * @param string $root_path Путь, начиная с которого строить иерархию
-     * @param int|string $type Тип возвращаемых данных (CFile::TYPE_ARR | CFile::TYPE_XML | CFile::TYPE_JSON)
-     *
+     * @param string $root_path
      * @param string|callback $filter
-     * @return mixed Возвращает структуру файловой системы (по умолчанию в формате CFile::TYPE_ARR)
+     * @return array
      */
-    public function getFS($root_path, $type = self::TYPE_ARR, $filter = "*")
+    public function getFS($root_path, $filter = "*")
     {
         if(gettype($filter) != 'object') {
             $filter = '/^'.str_replace('*', '(.*)', $filter).'$/';
         }
 
 
-        if($type == $this::TYPE_ARR) {
-            $files  = array('files'=>array(), 'dirs'=>array());
-            $directories  = array();
+        $files  = array('files'=>array(), 'dirs'=>array());
+        $directories  = array();
 
-            $root_path = $this->convertPath($root_path);
+        $root_path = $this->convert($root_path);
 
-            $root_path = realpath($root_path);
+        $root_path = realpath($root_path);
 
-            if($root_path) {
-                $last_letter  = $root_path[strlen($root_path)-1];
-                $root_path  = ($last_letter == '\\' || $last_letter == '/') ? $root_path : $root_path.DIRECTORY_SEPARATOR;
-                $root_path = str_replace("\\", "/", $root_path);
+        if($root_path) {
+            $last_letter  = $root_path[strlen($root_path)-1];
+            $root_path  = ($last_letter == '\\' || $last_letter == '/') ? $root_path : $root_path.DIRECTORY_SEPARATOR;
+            $root_path = str_replace("\\", "/", $root_path);
 
+            $directories[]  = $root_path;
 
+            while (sizeof($directories)) {
+                $dir  = array_pop($directories);
+                $handle = opendir($dir);
+                if (is_resource($handle)) {
+                    while (false !== ($file = readdir($handle))) {
+                        if ($file == '.' || $file == '..')
+                            continue;
 
-                $directories[]  = $root_path;
+                        $file  = $dir.$file;
+                        if (is_dir($file)) {
+                            $directory_path = $file.DIRECTORY_SEPARATOR;
+                            if(
+                                ((gettype($filter) == 'object') && call_user_func($filter, $directory_path)) ||
+                                (is_string($filter) && preg_match($filter, substr($directory_path, strrpos($directory_path, "/")+1)))
+                            ) {
 
-                while (sizeof($directories)) {
-                    $dir  = array_pop($directories);
-                    $handle = opendir($dir);
-                    if (is_resource($handle)) {
-                        while (false !== ($file = readdir($handle))) {
-                            if ($file == '.' || $file == '..')
-                                continue;
+                                array_push($directories, $directory_path);
+                                $files['dirs'][]  = $directory_path;
+                            }
+                        } elseif (is_file($file)) {
 
-                            $file  = $dir.$file;
-                            if (is_dir($file)) {
-                                $directory_path = $file.DIRECTORY_SEPARATOR;
-                                if(
-                                    ((gettype($filter) == 'object') && call_user_func($filter, $directory_path)) ||
-                                    (is_string($filter) && preg_match($filter, substr($directory_path, strrpos($directory_path, "/")+1)))
-                                ) {
-
-                                    array_push($directories, $directory_path);
-                                    $files['dirs'][]  = $directory_path;
-                                }
-                            } elseif (is_file($file)) {
-
-                                if(
-                                    ((gettype($filter) == 'object') && call_user_func($filter, $file)) ||
-                                    (is_string($filter) && preg_match($filter, substr($file, strrpos($file, "/")+1)))
-                                ) {
-                                    $files['files'][]  = $file;
-                                }
+                            if(
+                                ((gettype($filter) == 'object') && call_user_func($filter, $file)) ||
+                                (is_string($filter) && preg_match($filter, substr($file, strrpos($file, "/")+1)))
+                            ) {
+                                $files['files'][]  = $file;
                             }
                         }
-                        closedir($handle);
                     }
+                    closedir($handle);
                 }
             }
 
@@ -504,13 +409,18 @@ class File
         }
     }
 
+    /**
+     * @param $path
+     * @param bool $bAbs
+     * @return array
+     */
     public function getFileList($path, $bAbs = true)
     {
         $aResult = array(
             'files' => array(),
             'dirs' => array(),
         );
-        $root = $this->convertPath($path);
+        $root = $this->convert($path);
         $aList = scandir($root);
 
         foreach ( $aList as $k => $v ) {

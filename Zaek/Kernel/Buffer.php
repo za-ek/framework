@@ -3,30 +3,20 @@ namespace Zaek\Kernel;
 use Zaek\Kernel\Exception\IncorrectBufferOrder;
 
 /**
- * @ru Буферизация вывода для отложенного вывода значений и отложенного
- * выполнения функций.
- *
- * @en Output buffering for delaying output and delayed function execution
- *
- * @es Almacenamiento en búfer de la salida para adelantar la salida y la ejecución
- * de algunos funciones
+ * Output buffering for delaying output and delayed function execution
+ * @package Zaek\Kernel
  */
-
 class Buffer
 {
     /**
-     * @en Variables to be replaced
-     * @es Lista de variables que han de ser reemplazados
-     * @ru Список переменных для замены
+     * Variables to be replaced
      *
      * @var array
      */
     protected $_params = array();
 
     /**
-     * @en Variables hash
-     * @es Lista de los hash de variables
-     * @ru Список хэшей для переменных
+     * Variables hash
      *
      * @var array
      */
@@ -35,38 +25,33 @@ class Buffer
     protected $_callable_params = array();
 
     /**
-     * @en Buffer content
-     * @es Contenido de búfer
-     * @ru Содержание буфера
+     * Buffer content
      *
      * @var string
      */
     protected $_content;
 
     /**
-     * @en If content was treated
-     * @es Si el contenido de búfer ya fue tratado
-     * @ru Указывает, была ли выполнена обработка содержимого
+     * If content was treated
      *
      * @var boolean
      */
     private $_treated = false;
 
     /**
-     * @en Is content treating enabled
-     * @es Si está activado el tratamiento del contenido
-     * @ru Включена ли обработка буфера
+     * Is content treating enabled
      *
      * @var bool
      */
     private $_enabled = true;
 
+    /**
+     * @var int
+     */
     private $_level = -1;
 
     /**
-     * @en Callback function list
-     * @es Lista de funciones de callback
-     * @ru Список callback-функций
+     * Callback function list
      *
      * @var array
      */
@@ -77,9 +62,7 @@ class Buffer
     }
 
     /**
-     * @en Buffer initialization - turn output buffering on
-     * @es Inicialización del búfer - activa el almacenamiento de la salida en búfer
-     * @ru Инициализация буфера - включает буферизацию
+     * Buffer initialization - turn output buffering on
      *
      * @return $this
      */
@@ -91,9 +74,7 @@ class Buffer
     }
 
     /**
-     * @en Callback function when output buffering is turning off
-     * @es Función callback cuando se termine la buferización
-     * @ru callback-функция для завершения буферизации
+     * Callback function when output buffering is turning off
      *
      * @param string $b
      * @return string
@@ -109,9 +90,7 @@ class Buffer
     }
 
     /**
-     * @en Show up an anchor for delayed output
-     * @es Pone un anchor que sea reemplazada al terminar buferización
-     * @ru Выводит якорь для отложенного вывода значения
+     * Show up an anchor for delayed output
      *
      * @param string $name
      */
@@ -130,9 +109,7 @@ class Buffer
     }
 
     /**
-     * @en Setting up delayed value $v for variable $k
-     * @es Establece el valor $v de la variable $k
-     * @ru Устанавливает значение ($v) для отложенного вывода ($k)
+     * Setting up delayed value $v for variable $k
      *
      * @param string $k
      * @param mixed $v
@@ -146,9 +123,7 @@ class Buffer
     }
 
     /**
-     * @en Show up an anchor for delayed function call
-     * @es Pone un anchor a la salida para función retrasada
-     * @ru Выводит якорь для отложенной функции
+     * Show up an anchor for delayed function call
      *
      * @param $name
      * @param $func
@@ -170,9 +145,7 @@ class Buffer
     }
 
     /**
-     * @en This feature is for replace text $k in whole content by value $v
-     * @es Esta función permite cambiar todas cadenas $k por el $v en el contenido del búfer
-     * @ru Заменяет в буфере все найденные строки $k на $v
+     * This feature is for replace text $k in whole content by value $v
      *
      * @param $k
      * @param $v
@@ -184,9 +157,7 @@ class Buffer
     }
 
     /**
-     * @en Stop output buffering and replace all delayed values and functions
-     * @es Deja el almacenamiento de la salida en el búfer y reemplaza todos los valores y funciones retrasados
-     * @ru Останавливает буферизацию вывода и заменяет все отложенные значения и функции
+     * Stop output buffering and replace all delayed values and functions
      *
      * @return string
      */
@@ -231,9 +202,7 @@ class Buffer
     }
 
     /**
-     * @en Show up buffer content
-     * @es Envia el contenido del búfer a la salida
-     * @ru Показывает содержимое буфера
+     * Show up buffer content
      *
      */
     public function show ()
@@ -244,9 +213,7 @@ class Buffer
     }
 
     /**
-     * @en return buffer content after treating
-     * @es Devuelve el contenido del búfer despues de tratarlo
-     * @ru Возвращает содержимое буфера после обработки
+     * return buffer content after treating
      *
      * @return string
      */
@@ -257,9 +224,6 @@ class Buffer
         return $this->_content;
     }
 
-    /**
-     * Обработка буффера
-     */
     private function _treatContent ()
     {
         if($this->_enabled) {
@@ -287,9 +251,7 @@ class Buffer
     }
 
     /**
-     * @en Disable delayed output but still buffering
-     * @es Deshabilita la salida retrasada pero no para el buferización
-     * @ru Выключает отложенный вывод, но оставляет рабочим буферизацию
+     * Disable delayed output but still buffering
      */
     public function disable()
     {
@@ -306,14 +268,8 @@ class Buffer
     }
 
     /**
-     * @en Return current value of delayed variable, this method will not execute functions as value,
+     * Return current value of delayed variable, this method will not execute functions as value,
      * to get calculated value you need to call method end() before.
-     *
-     * @es Devuelve el valor actual de variable $k, no ejecuta los valores definidas con funciones,
-     * para conseguir estos valores primero llama al metodo get()
-     *
-     * @ru Возвращает значение переменной буфера, этот метод не рассчитывает значения заданные функциями (для
-     * получения таких значений необходимо вызвать метод get())
      *
      * @param $k
      * @return bool
@@ -322,10 +278,21 @@ class Buffer
     {
         return (array_key_exists($k, $this->_params)) ? $this->_params[$k] : false;
     }
+
+    /**
+     * Empty buffered content
+     */
     public function clear()
     {
         $this->_content = '';
     }
+
+    /**
+     * Add replacement
+     *
+     * @param $code
+     * @param $val
+     */
     public function push($code, $val)
     {
         if ( !isset($this->_params[$code]) ) $this->_params[$code] = [];

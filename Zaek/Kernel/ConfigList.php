@@ -7,14 +7,10 @@ use Zaek\Kernel\Exception\ConfigValueNotSet;
 class ConfigList extends Override
 {
     /**
-     * @en Return config param $opt from section $sec from configuration list
-     * @es Devuelve el valor de opción $opt en sección $sec de la lista de configuraciones
-     * @ru Возвращает конфигурационный параметр $opt из раздела $sec
-     *
+     * Return config param $opt from section $sec from configuration list
      * @param $sec
      * @param $opt
      * @return bool|mixed
-     * @throws Exception
      */
     public function get($sec, $opt)
     {
@@ -28,7 +24,8 @@ class ConfigList extends Override
     }
 
     /**
-     * Проверяет, определён ли параметр
+     * Return true if there is a parameter
+     *
      * @param $sec
      * @param $opt
      * @return bool|mixed|null
@@ -38,7 +35,7 @@ class ConfigList extends Override
         return $this->rollMethod('isDefined', array($sec, $opt));
     }
     /**
-     * Переопределение абстрактного метода из класса Override
+     * Config value could not be null
      * @param $result
      * @return bool
      */
@@ -48,7 +45,7 @@ class ConfigList extends Override
     }
 
     /**
-     * Переопределение метода из класса Override
+     *
      *
      * @param $method_name
      * @param $params
@@ -66,7 +63,7 @@ class ConfigList extends Override
             } else {
                 return null;
             }
-        } catch ( Exception $e ) {
+        } catch ( \Exception $e ) {
             return false;
         }
     }

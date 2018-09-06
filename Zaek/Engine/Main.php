@@ -1,14 +1,14 @@
 <?php
 namespace Zaek\Engine;
 
-use Zaek\Data\Ini\Connector;
+use Zaek\Data\Connector;
 use Zaek\Kernel\ConfigList;
 use Zaek\Kernel\Dictionary;
 use Zaek\Kernel\File;
 use Zaek\Kernel\Request;
 use Zaek\User\User;
 
-class Main
+abstract class Main
 {
     protected $_config = [];
     protected $_conf = null;
@@ -143,7 +143,7 @@ class Main
     }
 
     /**
-     * Преобразовывает URI в путь к файлу
+     * Routing
      *
      * @param $uri
      * @return string
@@ -157,17 +157,9 @@ class Main
 
         return $this->fs()->getRootPath() . $uri;
     }
-    /**
-     * Basic autoload
-     * @param $class
-     */
-    public function autoload($class)
-    {
-        @include_once __DIR__ . '/../../'. str_replace('\\','/',strtolower($class)). '.php';
-    }
 
     /**
-     * Объект файловой системы
+     * File system
      * @return File
      */
     public function fs()
@@ -180,17 +172,14 @@ class Main
     }
 
     /**
-     * Доступ к данным
+     * Data
      * @return Connector
      */
-    public function data()
-    {
-        if ( is_null($this->_data) ) {
-            $this->_data = new Connector($this);
-        }
+    abstract public function data();
 
-        return $this->_data;
-    }
+    /**
+     * @return User
+     */
     public function user()
     {
         if ( is_null($this->_user) ) {
@@ -199,6 +188,7 @@ class Main
 
         return $this->_user;
     }
+
     public function dic()
     {
         if ( is_null($this->_dic) ) {

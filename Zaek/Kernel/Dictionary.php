@@ -10,11 +10,14 @@ class Dictionary
      */
     protected $_content = array();
 
-    protected $_lang = null;
-    protected $_app = null;
+    /**
+     * @var Main
+     */
+    protected $_app;
 
     /**
-     * CDictionary constructor.
+     * Dictionary constructor.
+     *
      * @param Main $app
      */
     public function __construct(Main $app)
@@ -23,9 +26,7 @@ class Dictionary
     }
 
     /**
-     * @en Add translations from a ini file located at $path
-     * @es Añade la lista de traducciones de un fichero tipo 'ini' de la ruta $path
-     * @ru Добавляет список переводов из ini-файла $path
+     * Add translations from a ini file located at $path
      *
      * @param $path
      */
@@ -44,7 +45,7 @@ class Dictionary
     }
 
     /**
-     * @en Receive one or more parameters to return text translate, for just one parameter return
+     * Receive one or more parameters to return text translate, for just one parameter return
      * translated code, if there is more than one parameter. transform string will be format with
      * function sprintf
      *
@@ -53,28 +54,6 @@ class Dictionary
      * user.greeting = 'Hello, %s!'
      *
      * Script:
-     * $dic = $app->lang();
-     * $dic->text('user.greeting', $app->user()->getName());
-     *
-     * @es Devuelve el text traducido, al pasarle mas que un argumento la cadena (primer argumento)
-     * será tratada con función sprintf
-     *
-     * Fichero de lenguaje:
-     * [esp]
-     * user.greeting = 'Hola, %s!'
-     *
-     * Script:
-     * $dic = $app->lang();
-     * $dic->text('user.greeting', $app->user()->getName());
-     *
-     * @ru Возвращает перевод текста, если передать методу больше одного параметра, то он использует
-     * их для обработки строки с помощью функции sprintf
-     *
-     * Языковой файл:
-     * [rus]
-     * user.greeting = 'Привет, %s!'
-     *
-     * Скрипт:
      * $dic = $app->lang();
      * $dic->text('user.greeting', $app->user()->getName());
      *
@@ -97,23 +76,7 @@ class Dictionary
     }
 
     /**
-     * @en Return using language
-     * @es Devuelve el lenguaje
-     * @ru Возвращает код языка
-     *
-     * @return string
-     */
-    public function getLang()
-    {
-        if ( $this->_lang === null ) {
-            $this->_lang = $this->_app->user()->lang()->getCode();
-        }
-
-        return $this->_lang;
-    }
-
-    /**
-     * Устанавливает массив словаря
+     * Define a translate array
      *
      * @param $arr - Массив [код => перевод, ...]
      */
@@ -123,7 +86,7 @@ class Dictionary
     }
 
     /**
-     * Возвращает массив словаря
+     * Return translation list
      *
      * @return array
      */

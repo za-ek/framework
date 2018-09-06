@@ -1,8 +1,6 @@
 <?php
 namespace Zaek\Kernel;
 
-use Zaek\Engine\Main;
-
 class Hooks
 {
     private static $_LIST = array();
