@@ -15,7 +15,7 @@ class User
     protected $_access;
 
     /**
-     * @var CLanguage
+     * @var Language
      */
     protected $_language = null;
 

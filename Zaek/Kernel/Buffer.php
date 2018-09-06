@@ -1,5 +1,7 @@
 <?php
 namespace Zaek\Kernel;
+use Zaek\Kernel\Exception\IncorrectBufferOrder;
+
 /**
  * @ru Буферизация вывода для отложенного вывода значений и отложенного
  * выполнения функций.
@@ -222,7 +224,7 @@ class Buffer
             $this->disable();
             $this->_started = false;
         } else {
-            throw new Exception('INCORRECT_BUFFER_END_ORDER');
+            throw new IncorrectBufferOrder();
         }
 
         return $this->_content;

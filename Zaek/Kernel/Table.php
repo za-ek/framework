@@ -2,6 +2,7 @@
 namespace Zaek\Kernel;
 
 use Zaek\Basics\Graph\Node;
+use Zaek\Kernel\Exception\ColumnCountMismatch;
 
 
 /**
@@ -118,7 +119,7 @@ class Table
             $this->_keys = $arr;
             $this->_width = count($arr);
         } else {
-            throw new Exception('COLUMN_COUNT_DOES_NOT_MATCH ['.$this->_width.', '.count($arr).']');
+            throw ColumnCountMismatch::create($this->_width, count($arr));
         }
 
         return $this;
@@ -379,7 +380,7 @@ class Table
      * @param int $type
      * @param bool $int
      * @return array
-     * @throws CException
+     * @throws ColumnCountMismatch
      */
     public function fetchByKey(Node $field, array $aMulti = array(), $type = self::FETCH_NUM, $int = false)
     {
@@ -454,13 +455,10 @@ class Table
                         $bFirst = true;
                     }
                     if($type == self::FETCH_ASSOC) {
-                        $aReturn = @array_combine($this->_keys, $this->_data[$this->_row++]);
-
-                        if(!$aReturn) {
-                            $aError = error_get_last();
-                            if($aError && $aError['line'] == __LINE__ - 4) {
-                                throw new Exception('COLUMN_COUNT_DOES_NOT_MATCH');
-                            }
+                        if($this->_width == count($this->_data[$this->_row])) {
+                            $aReturn = array_combine($this->_keys, $this->_data[$this->_row++]);
+                        } else {
+                            throw ColumnCountMismatch::create($this->_width, $this->_data[$this->_row]);
                         }
 
 
@@ -483,7 +481,7 @@ class Table
 
             return $aReturn;
         } else {
-            return false;
+            return [];
         }
     }
     private function _calc()
@@ -495,7 +493,6 @@ class Table
         }
 
         if($this->_cur_page && $this->_per_page) {
-            // $this->_row = $this->_per_page * ($this->_cur_page-1);
             $this->_low_limit = $this->_per_page * ($this->_cur_page-1);
 
             $this->_top_limit = $this->_per_page * $this->_cur_page;

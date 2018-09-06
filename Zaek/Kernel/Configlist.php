@@ -2,6 +2,7 @@
 namespace Zaek\Kernel;
 
 use Zaek\Basics\Algorithm\Override;
+use Zaek\Kernel\Exception\ConfigValueNotSet;
 
 class ConfigList extends Override
 {
@@ -21,7 +22,7 @@ class ConfigList extends Override
         if ( $result !== null ) {
             return $result;
         } else {
-            throw new Exception('CONFIG_VALUE_NOT_SET ['.$sec.','.$opt.']', 3);
+            throw ConfigValueNotSet::create($sec, $opt);
         }
 
     }

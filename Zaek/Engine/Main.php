@@ -132,19 +132,16 @@ class Main
      * @param $file
      * @param bool $bRepeat - может быть подключен второй раз
      * @return mixed
-     * @throws Exception
      */
     public function includeFile($file, $bRepeat = true)
     {
         // TODO: Проверка пути файла
-        if ( @file_exists($file) ) {
+        if($this->fs()->checkRules($file, File::MODE_R)) {
             if ( $bRepeat ) {
                 return include $file;
             } else {
                 return include_once $file;
             }
-        } else {
-            throw new Exception('FILE_NOT_FOUND (CMain::includeFile) ['.$file.']');
         }
     }
 
@@ -161,7 +158,7 @@ class Main
         }
         if (substr($uri, -1) == '/') $uri .= 'index.php';
 
-        return $this->fs()->fromUri($uri, $this);
+        return $this->fs()->getRootPath() . $uri;
     }
     /**
      * Basic autoload

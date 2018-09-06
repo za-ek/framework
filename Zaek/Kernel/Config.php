@@ -2,6 +2,9 @@
 namespace Zaek\Kernel;
 
 
+use Zaek\Kernel\Exception\ConfigSectionNotSet;
+use Zaek\Kernel\Exception\ConfigValueNotSet;
+
 final class Config
 {
     /**
@@ -87,14 +90,14 @@ final class Config
     {
         // если не присутствует раздел
         if(strlen($sec) > 0 && !array_key_exists($sec, $this->_data)) {
-            throw new Exception("CONFIG_SECTION_NOT_SET [[".$sec."]]", 3);
+            throw ConfigSectionNotSet::create($sec);
         }
 
         // опция в разделе
         if( array_key_exists($opt, $this->_data[$sec]) ) {
             return $this->_data[$sec][$opt];
         } else {
-            throw new Exception('CONFIG_VALUE_NOT_SET ['.$sec.':'.$opt.']', 3);
+            throw ConfigValueNotSet::create($sec, $opt);
         }
     }
 

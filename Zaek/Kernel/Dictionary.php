@@ -28,7 +28,6 @@ class Dictionary
      * @ru Добавляет список переводов из ini-файла $path
      *
      * @param $path
-     * @throws Exception
      */
     public function addFile($path)
     {
@@ -41,8 +40,6 @@ class Dictionary
             } else {
                 $this->_content = array_merge($this->_content, (array)$content);
             }
-        } else {
-            throw new Exception('LANGUAGE_FILE_DOES_NOT_EXIST ['.$path.']', 4);
         }
     }
 

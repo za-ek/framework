@@ -24,12 +24,17 @@ class Cluster
         }
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \DomainException
+     */
     public function get($id)
     {
         if ( isset($this->_list[$id]) ) {
             return $this->_list[$id];
         } else {
-            throw new Exception('NO_SUCH_CONNECTION');
+            throw new \DomainException('Connection not found');
         }
     }
 }

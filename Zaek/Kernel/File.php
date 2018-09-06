@@ -2,6 +2,10 @@
 namespace Zaek\Kernel;
 
 use Zaek\Engine\Main;
+use Zaek\Kernel\Exception\ConfigSectionNotSet;
+use Zaek\Kernel\Exception\ConfigValueNotSet;
+use Zaek\Kernel\Exception\CouldNotCreateFile;
+use Zaek\Kernel\Exception\FileNotExists;
 
 class File
 {
@@ -107,7 +111,9 @@ class File
         if ( $this->_framework_root === false ) {
             try {
                 $this->_framework_root = $this->_conf->get('fs', 'framework_root');
-            } catch (CException $e) {
+            } catch (ConfigSectionNotSet $e) {
+                $this->_framework_root = $this->getRootPath();
+            } catch (ConfigValueNotSet $e) {
                 $this->_framework_root = $this->getRootPath();
             }
 
@@ -190,7 +196,6 @@ class File
      *
      * @param $file
      * @return string
-     * @throws Exception
      */
     public function getContent ($file)
     {
@@ -198,7 +203,7 @@ class File
             $content = file_get_contents($this->convertPath($file));
             return $content;
         } else {
-            throw new Exception("CANNOT_GET_FILE_CONTENT [".$file."]", $this::E_ACCESS_DENIED);
+            return '';
         }
     }
 
@@ -371,7 +376,6 @@ class File
      * @param string $mode - file access mode
      * @param bool $b - check if file exist
      *
-     * @throws CException
      * @return bool
      */
     public function checkRules($file, $mode, $b = false)
@@ -379,7 +383,7 @@ class File
         $file = $this->convertPath($file);
 
         if($b && !file_exists($file)) {
-            throw new Exception("FILE_NOT_EXISTS [".$file."]", $this::E_NOT_EXISTS);
+            throw FileNotExists::create($file);
         }
 
         return $this->checkFileRules($file, $mode) && $this->checkExtRules($file, $mode);
@@ -420,168 +424,6 @@ class File
         return $s;
     }
 
-    /**
-     * @param $file
-     * @param $content
-     * @param bool|false $bAppend
-     * @param bool $bMakeIfNE
-     * @return bool
-     * @throws CException
-     */
-    public function fillContent($file, $content, $bAppend = false, $bMakeIfNE = false)
-    {
-        $file = $this->convertPath($file);
-
-        if ( !file_exists($file) ) {
-            if ( $bMakeIfNE ) {
-                if ( $this->checkRules($file, $this::MODE_W) ) {
-                    touch($file);
-                } else {
-                    throw new Exception("CANNOT_CREATE_FILE [".$file."]", $this::E_ACCESS_DENIED);
-                }
-            } else {
-                throw new Exception("FILE_NOT_EXISTS [" . $file . "]", $this::E_NOT_EXISTS);
-            }
-        }
-
-        $fs = $this->getStream($file, ($bAppend) ? $this::MODE_A : $this::MODE_W);
-
-        if($fs !== NULL) {
-
-            fputs($fs, $content);
-            fclose($fs);
-
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-    /**
-     * @en Get script path from request string $uri
-     * @es Obtiene el camino a fichero de script a partir de petición $uri
-     * @ru Полуает путь к исполняемому файлу из строки запроса uri
-     *
-     * @param $uri
-     * @param Main $app
-     * @return bool|string
-     * @throws CException
-     */
-    public function fromUri($uri, Main $app)
-    {
-        if ( !$uri ) {
-            return false;
-        }
-
-        if(strpos($uri, '?') !== false) {
-            $uri = substr($uri, 0, strpos($uri, '?'));
-        }
-
-        $conf = $app->conf();
-
-        // Пути к директориям
-        $aDir = array();
-        // %DOCUMENT_ROOT%
-        $aDir['root'] = $this->getRootPath();
-        // %DOCUMENT_ROOT%/content/default
-        $aDir['default'] = $this->convertPath($conf->get('content', 'default'));
-        // %DOCUMENT_ROOT%/content/%SITE_NAME%
-        $aDir['site'] = $this->convertPath($conf->get('content', 'rule'));
-
-        // Правила обработки адреса
-        $aFiles = array_unique(array(
-            $aDir['site'] .'/.rewrite.php',
-            $aDir['default'] .'/.rewrite.php',
-            $aDir['root'] .'/.rewrite.php',
-        ));
-
-        $aRules = array();
-
-        $obj = $this;
-
-        array_map(function($el) use (&$aRules, $obj) {
-            try {
-                if ($obj->checkRules($el, $obj::MODE_R)) {
-                    $rules = json_decode($this->getContent($el), 1);
-                    if ($rules && is_array($rules)) {
-                        $aRules = array_merge($aRules, $rules);
-                    }
-                }
-            } catch ( CException $e ) {
-            }
-        }, $aFiles);
-
-        // Правила обработки адреса
-        $aFiles = array_unique(array(
-            $aDir['root'] .'/.ignore.php',
-            $aDir['default'] .'/.ignore.php',
-            $aDir['site'] .'/.ignore.php',
-        ));
-
-        $obj = $this;
-        $aIgnore = array(
-            'uri' => array()
-        );
-
-        array_map(function($el) use (&$aIgnore, $obj) {
-            try {
-                if ($obj->checkRules($el, $obj::MODE_R)) {
-                    if ( $ar = json_decode($this->getContent($el), 1) ) {
-                        if ( isset($ar['uri']) ) {
-                            $aIgnore['uri'] = array_merge($aIgnore['uri'], $ar['uri']);
-                        }
-                    }
-                }
-            } catch ( Exception $e ) {
-            }
-        }, $aFiles);
-
-        // Обработка адреса согласно правилам
-        foreach ($aRules as $k => $v ) {
-            $uri = @preg_replace($k, $v, $uri);
-        }
-
-        $uri = preg_replace('#[/]{2,}#', '/', $uri);
-
-        if (substr($uri, -1) == '/') $uri .= 'index.php';
-
-        $uri = $this->getRelativePath($uri);
-
-        // Путь к подключаемому файлу
-        $aFile = array();
-        // В корне
-        $aFile['root'] = $aDir['root'] . '/' . $uri;
-        // По умолчанию
-        $aFile['default'] = $aDir['default'] . '/' . $uri;
-        // Для текущего сайта
-        $aFile['site'] = $aDir['site'] . '/' . $uri;
-
-        $file = false;
-
-        foreach(array('site', 'default', 'root') as $type) {
-            while(strpos($aFile[$type], '//') !== false) {
-                $aFile[$type] = preg_replace('#[/]{2,}#', '/', $aFile[$type]);
-            }
-
-            $q = strpos($aFile[$type], "?");
-
-            try {
-                if($this->checkRules(($q) ? substr($aFile[$type], 0, $q) : $aFile[$type] , $this::MODE_R, true)) {
-                    $file = $aFile[$type];
-                    break;
-                }
-            } catch ( Exception $e ) {
-            }
-        }
-
-        if ( in_array($uri, $aIgnore['uri'] ) ) {
-            throw new Exception('IGNORE_URI ['.$file.','.$uri.']', 1);
-        }
-
-        return $file;
-    }
-
     public function extension($str)
     {
         if(strrpos($str, ".", strrpos($str, DIRECTORY_SEPARATOR)) !== false) {
@@ -590,29 +432,7 @@ class File
             return false;
         }
     }
-    public function copyFile($file, $file_dst, $overwrite = false, $make_dirs = true)
-    {
-        if(!$file) throw new Exception("INVALID_SOURCE_FILE", 11);
-        if(!$file_dst) throw new Exception("INVALID_DESTINATION_FILE", 11);
 
-        if(!$this->checkRules($file, File::MODE_R, true)) throw new Exception('FILE_ACCESS_DENIED ['.$file.']', 1);
-        if(!$this->checkRules($file_dst, File::MODE_W)) throw new Exception('FILE_ACCESS_DENIED ['.$file_dst.']', 1);
-
-
-        if(@file_exists($file_dst)) {
-            if($overwrite) {
-                unlink($file_dst);
-            } else {
-                throw new Exception("FILE_ALREADY_EXISTS [{$file_dst}]", $this::E_EXISTS);
-            }
-        }
-
-        if(@file_exists(dirname($file_dst)) || ($make_dirs && mkdir(dirname($file_dst), 0777, true))) {
-            return copy($file, $file_dst);
-        } else {
-            return false;
-        }
-    }
     /**
      * Возвращает структуру файловой системы в необходимом формате
      *
@@ -683,6 +503,7 @@ class File
             return $files;
         }
     }
+
     public function getFileList($path, $bAbs = true)
     {
         $aResult = array(
@@ -700,38 +521,5 @@ class File
         }
 
         return $aResult;
-    }
-    /**
-     * Создаёт файл и наполняет содержимым, в случае необходимости
-     *
-     * @param string $file Путь к создаваемому файлу
-     * @param string $content Содержание файла, по умолчанию - NULL
-     * @param int $type Предустановленный тип заполнения файла, по умолчанию - текст
-     * @param bool $rules Права на файл
-     * @return bool
-     * @throws CException
-     */
-    public function makeFile($file, $content = NULL, $type = File::TYPE_TEXT, $rules = false)
-    {
-        $file = self::convertPath($file);
-        if(file_exists($file)) {
-            throw new Exception("FILE_ALREADY_EXISTS [$file]", $this::E_EXISTS);
-        }
-
-        if($this->checkFileRules($file, $this::MODE_W)) {
-            if(@touch($file, time())) {
-                if($rules !== false) {
-                    chmod($file, $rules);
-                } else {
-                    chmod($file, self::$_defaultFileRules);
-                }
-
-                return $this->fillContent($file, $content, $type);
-            } else {
-                throw new Exception("FILE_ACCESS_DENIED", $this::E_ACCESS_DENIED);
-            }
-        } else {
-            throw new Exception("FILE_ACCESS_DENIED", $this::E_ACCESS_DENIED);
-        }
     }
 }

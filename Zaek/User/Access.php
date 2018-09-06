@@ -3,6 +3,7 @@ namespace Zaek\User;
 
 use Zaek\Engine\Main;
 use Zaek\Kernel\Exception;
+use Zaek\User\Exception\UserNotFound;
 
 class Access
 {
@@ -32,7 +33,6 @@ class Access
      * @param $login
      * @param $password
      * @return bool
-     * @throws Exception
      */
     public function authenticate($login, $password)
     {
@@ -47,7 +47,6 @@ class Access
      * @param $email
      * @param $password
      * @return bool
-     * @throws CException
      */
     public function authenticateByEmail($email, $password)
     {
@@ -63,7 +62,6 @@ class Access
      *
      * @param $aFilter
      * @return bool
-     * @throws CException
      */
     public function authenticateBy($aFilter)
     {
@@ -73,7 +71,7 @@ class Access
             // Аутентификация пройдена
             return $this->_makeAuth($aUser[0],$aUser[1]);
         } else {
-            throw new Exception('USER_NOT_FOUND');
+            throw new UserNotFound;
         }
     }
 
@@ -169,16 +167,9 @@ class Access
      */
     public function can($action)
     {
-        if ( session_status() != PHP_SESSION_ACTIVE ) {
-            session_start();
-        }
-
-        if ( isset($_SESSION['z_auth_user']) ) {
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
+
     public function isAuthenticated()
     {
 	    $user_hash      = (string)$this->_app->request()->cookie('hash');
