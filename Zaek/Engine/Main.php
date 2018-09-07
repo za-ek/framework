@@ -7,7 +7,6 @@ use Zaek\Kernel\Dictionary;
 use Zaek\Kernel\File;
 use Zaek\Kernel\Request;
 use Zaek\Kernel\Router;
-use Zaek\Users\User;
 
 /**
  * Class Main
@@ -63,13 +62,6 @@ class Main
     public function tpl()
     {
         return $this->getObject('tpl', Template::class);
-    }
-    /**
-     * @return User
-     */
-    public function user()
-    {
-        return $this->getObject('user', User::class);
     }
     /**
      * @return Dictionary
