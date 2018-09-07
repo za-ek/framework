@@ -3,8 +3,8 @@ namespace Zaek\Basics\Algorithm;
 
 class Override implements \ArrayAccess, \Iterator
 {
-    private $_i;
-    private $_count;
+    private $_i = 0;
+    private $_count = 0;
     private $_data;
 
     public function rewind()

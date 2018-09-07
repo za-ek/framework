@@ -66,7 +66,7 @@ class ConfigList extends Override
     {
         try {
             if(!$this->current()) {
-                return false;
+                return null;
             }
 
             if ( $this->current()[2] == null ) {
