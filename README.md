@@ -3,6 +3,10 @@ Za-ek PHP Framework
 
 [![Build Status](https://travis-ci.org/za-ek/zaek.svg?branch=master)](https://travis-ci.org/za-ek/zaek)
 
+# Composer
+
+composer require za-ek/zaek
+
 # Установка и обновление
 
 Из консоли, в корневой директории сайта:
