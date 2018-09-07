@@ -3,5 +3,10 @@
     "description": "za-ek framework",
     "require": {
         "php": "^7.2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zaek\\": "Zaek"
+        }
     }
 }

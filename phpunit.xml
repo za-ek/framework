@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/5.4/phpunit.xsd"
-         bootstrap="zaek/tests/controller.php"
+         bootstrap="tests/controller.php"
          backupGlobals="false"
          beStrictAboutCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
@@ -9,7 +9,7 @@
          beStrictAboutTodoAnnotatedTests="true"
          verbose="true">
     <testsuite>
-        <directory suffix="Test.php">zaek/tests</directory>
+        <directory suffix="Test.php">tests</directory>
     </testsuite>
 
     <filter>
