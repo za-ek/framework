@@ -65,6 +65,10 @@ class ConfigList extends Override
     protected function callMethod($method_name, $params)
     {
         try {
+            if($this->current()) {
+                return false;
+            }
+
             if ( $this->current()[2] == null ) {
                 $this->initializeConfig();
             }
