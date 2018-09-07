@@ -1,17 +1,24 @@
 <?php
 namespace Zaek\Kernel;
 
+use Zaek\Engine\Main;
+
 class Request
 {
+    protected $_app;
+
+    public function __construct(Main $app)
+    {
+        $this->_app = $app;
+    }
+
     public function cookie()
     {
         if(func_num_args() == 1) {
-
-        } else if (func_get_args() == 2) {
-
-        } else {
-            return $_COOKIE;
+            return $_COOKIE[func_get_arg(0)] ?? null;
         }
+
+        return $_COOKIE;
     }
 
     public function post()
@@ -30,6 +37,11 @@ class Request
         }
 
         return $_GET;
+    }
+
+    public function bin()
+    {
+        return $_FILES;
     }
 
     public function server()

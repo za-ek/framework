@@ -2,10 +2,11 @@
 namespace Zaek\Engine;
 
 use Zaek\Data\Memory\Connector;
+use Zaek\Kernel\Config;
 use Zaek\Kernel\ConfigList;
-use Zaek\Kernel\Dictionary;
 use Zaek\Kernel\File;
 use Zaek\Kernel\Request;
+use Zaek\Kernel\Response;
 use Zaek\Kernel\Router;
 
 /**
@@ -18,6 +19,15 @@ class Main
      * @var array
      */
     private $_objects;
+
+    /**
+     * Main constructor.
+     * @param Config|null $conf
+     */
+    public function __construct(Config $conf = null)
+    {
+        $this->conf()->push($conf);
+    }
 
     /**
      * Return an object
@@ -57,20 +67,6 @@ class Main
         return $this->getObject('request', Request::class);
     }
     /**
-     * @return Template
-     */
-    public function tpl()
-    {
-        return $this->getObject('tpl', Template::class);
-    }
-    /**
-     * @return Dictionary
-     */
-    public function dic()
-    {
-        return $this->getObject('dic', Dictionary::class);
-    }
-    /**
      * @return \Zaek\Data\Connector
      */
     public function data()
@@ -84,15 +80,12 @@ class Main
     {
         return $this->getObject('router', Router::class);
     }
-
     /**
-     * @return string
+     * @return Response
      */
-    public function run()
+    public function response()
     {
-        return $this->includeFile(
-            $this->router()->uri($this->conf()->get('request', 'uri'))
-        );
+        return $this->getObject('response', Response::class);
     }
 
     /**
