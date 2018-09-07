@@ -17,19 +17,11 @@ class Template extends Buffer
     }
 
     /**
-     * @en Setting up css/js files and meta tags to template. If it starts with backslash "\" then path will be calculate
+     * Setting up css/js files and meta tags to template. If it starts with backslash "\" then path will be calculate
      * from template css/js directory.
      *
      * \index.js => /zaek/tpl/pages/default/js/index.js
      * /index.js => /relative_path/index.js
-     * //www.za-ek.ru/index.js => //www.za-ek.ru/index.js
-     * @es
-     *
-     * @ru Добавляет css/js файл в шаблон. Если путь начинается с обратного слэша "\", то расчитанный путь
-     * будет начинаться с пути к css/js папки.
-     *
-     * \index.js => /zaek/tpl/pages/default/js/index.js
-     * /index.js => /относительный_путь/index.js
      * //www.za-ek.ru/index.js => //www.za-ek.ru/index.js
      *
      * @param $type - css|js

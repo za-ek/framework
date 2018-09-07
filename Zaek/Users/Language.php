@@ -1,5 +1,5 @@
 <?php
-namespace Zaek\User;
+namespace Zaek\Users;
 
 use Zaek\Engine\Main;
 

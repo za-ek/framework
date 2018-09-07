@@ -1,138 +1,117 @@
 <?php
 namespace Zaek\Engine;
 
-use Zaek\Data\Connector;
+use Zaek\Data\Memory\Connector;
 use Zaek\Kernel\ConfigList;
 use Zaek\Kernel\Dictionary;
 use Zaek\Kernel\File;
 use Zaek\Kernel\Request;
-use Zaek\User\User;
+use Zaek\Kernel\Router;
+use Zaek\Users\User;
 
-abstract class Main
+/**
+ * Class Main
+ * @package Zaek\Engine
+ */
+class Main
 {
-    protected $_config = [];
-    protected $_conf = null;
-    protected $_fs = null;
-    protected $_template = null;
-    protected $_data = null;
-    protected $_user = null;
-    protected $_dic = null;
-    protected $_result = null;
-    protected $_request = null;
     /**
-     * Объект конфигурации
+     * @var array
+     */
+    private $_objects;
+
+    /**
+     * Return an object
+     *
+     * @param $name
+     * @param $class
+     * @return mixed
+     */
+    protected function getObject($name, $class = null)
+    {
+        if(empty($this->_objects[$name])) {
+            $this->_objects[$name] = new $class($this);
+        }
+
+        return $this->_objects[$name];
+    }
+
+    /**
      * @return ConfigList
      */
     public function conf()
     {
-        if ( is_null($this->_conf) ) {
-            $this->_conf = new ConfigList();
-
-            $this->_conf->push([
-                'fs' => [
-                    'root' => $_SERVER["DOCUMENT_ROOT"],
-                    'content' => $_SERVER['DOCUMENT_ROOT']. '/content'
-                ],
-                'content' => [
-                    'default' => '%DOCUMENT_ROOT%/content',
-                    'rule' => '%DOCUMENT_ROOT%/content',
-                ],
-                'template' => [
-                    'use_template' => false,
-                    'template_root' => $_SERVER["DOCUMENT_ROOT"] . '/templates',
-                    'relative_path' => '',
-                ],
-                'request' => [
-                    'uri' => @$_SERVER["REQUEST_URI"]
-                ],
-                'language' => [
-                    'default' => 'rus',
-                    'list' => [
-                        'rus', 'eng'
-                    ]
-                ]
-            ]);
-        }
-
-        return $this->_conf;
+        return $this->getObject('conf', ConfigList::class);
     }
-
+    /**
+     * @return File
+     */
+    public function fs()
+    {
+        return $this->getObject('fs', File::class);
+    }
+    /**
+     * @return Request
+     */
     public function request()
     {
-        if(is_null($this->_request)) {
-            $this->_request = new Request;
-        }
-
-        return $this->_request;
+        return $this->getObject('request', Request::class);
     }
-
     /**
-     * Объект шаблона
      * @return Template
      */
-    public function template()
+    public function tpl()
     {
-        if ( is_null($this->_template) ) {
-            $this->_template = new Template($this);
-        }
-        return $this->_template;
+        return $this->getObject('tpl', Template::class);
+    }
+    /**
+     * @return User
+     */
+    public function user()
+    {
+        return $this->getObject('user', User::class);
+    }
+    /**
+     * @return Dictionary
+     */
+    public function dic()
+    {
+        return $this->getObject('dic', Dictionary::class);
+    }
+    /**
+     * @return \Zaek\Data\Connector
+     */
+    public function data()
+    {
+        return $this->getObject('data', Connector::class);
+    }
+    /**
+     * @return Router
+     */
+    public function router()
+    {
+        return $this->getObject('router', Router::class);
     }
 
     /**
-     * Запуск приложения
-     * @param bool $bShow - установить в false, что бы запретить вывод
      * @return string
      */
-    public function run($bShow = true)
+    public function run()
     {
-        if ( $this->conf()->get('template', 'use_buffer') ) {
-            $this->template()->start();
-
-            if ( $this->conf()->get('template', 'use_template') ) {
-                $result = $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
-                    $this->conf()->get('template', 'code') . '/template.php');
-            } else {
-                $result = $this->includeRunFile();
-            }
-
-            $this->template()->end();
-
-            if ( $bShow ) {
-                echo $this->template()->getContent();
-            }
-        } else {
-            if ( $this->conf()->get('template', 'use_template') ) {
-                $result = $this->includeFile($this->conf()->get('template', 'template_root') . '/' .
-                    $this->conf()->get('template', 'code') . '/template.php');
-            } else {
-                $result = $this->includeRunFile();
-            }
-        }
-
-        return $result;
-    }
-    public function includeRunFile()
-    {
-        $result = $this->includeFile($this->route($this->conf()->get('request', 'uri')));
-        $this->_result = $result;
-        return $result;
-    }
-
-    public function getResult()
-    {
-        return $this->_result;
+        return $this->includeFile(
+            $this->router()->uri($this->conf()->get('request', 'uri'))
+        );
     }
 
     /**
-     * Подключает файл с областью видимости приложения
+     * Include a file able to use app object from variable $this
      *
      * @param $file
-     * @param bool $bRepeat - может быть подключен второй раз
+     * @param bool $bRepeat
      * @return mixed
      */
     public function includeFile($file, $bRepeat = true)
     {
-        // TODO: Проверка пути файла
         if($this->fs()->checkRules($file, File::MODE_R)) {
             if ( $bRepeat ) {
                 return include $file;
@@ -140,71 +119,5 @@ abstract class Main
                 return include_once $file;
             }
         }
-    }
-
-    /**
-     * Routing
-     *
-     * @param $uri
-     * @return string
-     */
-    public function route($uri)
-    {
-        if(strpos($uri, '?') !== false) {
-            $uri = substr($uri, 0, strpos($uri, '?'));
-        }
-        if (substr($uri, -1) == '/') $uri .= 'index.php';
-
-        return $this->fs()->getRootPath() . $uri;
-    }
-
-    /**
-     * File system
-     * @return File
-     */
-    public function fs()
-    {
-        if ( is_null($this->_fs) ) {
-            $this->_fs = new File($this);
-        }
-
-        return $this->_fs;
-    }
-
-    /**
-     * Data
-     * @return Connector
-     */
-    abstract public function data();
-
-    /**
-     * @return User
-     */
-    public function user()
-    {
-        if ( is_null($this->_user) ) {
-            $this->_user = new User($this);
-        }
-
-        return $this->_user;
-    }
-
-    public function dic()
-    {
-        if ( is_null($this->_dic) ) {
-            $this->_dic = new Dictionary($this);
-        }
-        return $this->_dic;
-    }
-
-
-    public function widget($code, $path = null)
-    {
-        if ( !$path ) {
-            $path = $this->conf()->get('template', 'template_root') . '/' .
-                $this->conf()->get('template', 'code') . '/widgets';
-        }
-
-        $this->includeFile($path. '/'.$code.'.php');
     }
 }

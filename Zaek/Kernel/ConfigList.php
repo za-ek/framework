@@ -2,10 +2,21 @@
 namespace Zaek\Kernel;
 
 use Zaek\Basics\Algorithm\Override;
+use Zaek\Engine\Main;
 use Zaek\Kernel\Exception\ConfigValueNotSet;
 
 class ConfigList extends Override
 {
+    /**
+     * @var Main
+     */
+    protected $_app;
+
+    public function __construct(Main $app)
+    {
+        $this->_app = $app;
+    }
+
     /**
      * Return config param $opt from section $sec from configuration list
      * @param $sec

@@ -90,20 +90,36 @@ class Table
             $this->_data = array_values($arr);
             $this->_height = count($arr);
             $this->_top_limit = count($arr);
-            $this->_width = count(array_shift($arr));
+            if($this->_height > 0) {
+                $this->_width = count(array_shift($arr));
+            } else {
+                $this->_width = 0;
+            }
         }
         return $this;
     }
+
     /**
      * Добавляет строку в набор данных
      * @param array $arr
      * @return \Zaek\Kernel\Table
+     * @throws ColumnCountMismatch
      */
     public function addRow($arr)
     {
-        $this->_data[] = $arr;
+        if(count($arr) != $this->_width) {
+            throw new ColumnCountMismatch;
+        }
+        $this->_data[] = array_values($arr);
         $this->setHeight(++$this->_height);
         return $this;
+    }
+
+    public function clear()
+    {
+        $this->_data = [];
+        $this->_height = 0;
+        $this->_top_limit = 0;
     }
 
     /**
@@ -111,7 +127,7 @@ class Table
      *
      * @param array $arr
      * @return Table
-     * @throws Exception
+     * @throws ColumnCountMismatch
      */
     public function setNames($arr)
     {
@@ -261,6 +277,11 @@ class Table
         return $this;
     }
 
+    public function getPosition()
+    {
+        return $this->_row;
+    }
+
     /**
      * Преобразовывает данные в массив, параметр (Node)$field используется для создания ключей массива,
      * установка флага bMulti в значение true означает, что поле, по которому будет происходить отбор
@@ -322,18 +343,15 @@ class Table
 
     /**
      * Возвращает текущую строку
-     * @param bool $i
+     * @param int $type
      * @return mixed
      */
-    public function current($i = false)
+    public function current($type = self::FETCH_NUM)
     {
-        if($this->_row == $this->_height) {
+        if($this->_row >= $this->_height) {
             return false;
         } else {
-            return ($i !== false)
-                ?
-                ((array_key_exists($i, $this->_data[$this->_row])) ? $this->_data[$this->_row][$i] : false)
-                : $this->_data[$this->_row];
+            return ($type == self::FETCH_NUM) ? $this->_data[$this->_row] : array_combine($this->_keys, $this->_data[$this->_row]);
         }
     }
     /**
@@ -529,5 +547,86 @@ class Table
     public function getCurrentPage()
     {
         return $this->_cur_page;
+    }
+
+    /**
+     * Remove elements not passed filter
+     * @param $filter
+     */
+    public function filter($filter)
+    {
+        $filter = array_intersect_key($filter, array_flip($this->getHeader()));
+
+        if($filter) {
+            foreach($filter as $k => $v) {
+                $filter[array_search($k, $this->_keys)] = $v;
+                unset($filter[$k]);
+            }
+            foreach ($this->_data as $i => $row) {
+                foreach ($filter as $k => $v) {
+                    if($row[$k] != $v) {
+                        unset($this->_data[$i]);
+                        $this->_height--;
+                    }
+                }
+            }
+
+            $this->setHeight($this->_height);
+            $this->_calc();
+
+        }
+    }
+
+    /**
+     * Sort data by column value ['column' => 'ASC|DESC', ...]
+     *
+     * @param $sort
+     */
+    public function sort($sort)
+    {
+        if($sort) {
+            $args = [];
+
+            foreach ($sort as $k => $v) {
+                $args[] = (string)array_search($k, $this->_keys);
+                $args[] = ($v == 'ASC') ? SORT_ASC : SORT_DESC;
+            }
+
+            foreach ($args as $n => $field) {
+                if(is_string($field)) {
+                    $tmp = array();
+                    foreach ($this->_data as $key => $row)
+                        $tmp[$key] = $row[$field];
+                    $args[$n] = $tmp;
+                }
+            }
+
+            $args[] = &$this->_data;
+            call_user_func_array('array_multisort', $args);
+
+            $this->_data = array_pop($args);
+        }
+    }
+
+    /**
+     * @param $i
+     * @param $row
+     * @throws ColumnCountMismatch
+     */
+    public function replace($i, $row)
+    {
+        if(count($row) != $this->_width) {
+            throw ColumnCountMismatch::create($this->_width, count($row));
+        }
+
+        if($i > $this->_height) {
+            throw new \OutOfRangeException('The table has no index <'.$i.'>');
+        }
+
+        if(array_keys($row) == $this->_keys) {
+            $row = array_combine(array_flip($this->_keys), $row);
+        }
+
+        $this->_data[$i] = $row;
     }
 }

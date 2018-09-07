@@ -1,9 +1,9 @@
 <?php
-namespace Zaek\User;
+namespace Zaek\Users;
 
 use Zaek\Engine\Main;
 use Zaek\Kernel\Exception;
-use Zaek\User\Exception\UserNotFound;
+use Zaek\Users\Exception\UserNotFound;
 
 class Access
 {

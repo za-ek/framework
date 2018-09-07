@@ -5,7 +5,7 @@ class cconfiglistTest extends TestCase
 {
     public function testDemand()
     {
-        $list = new \Zaek\Kernel\ConfigList();
+        $list = new \Zaek\Kernel\ConfigList(new \Zaek\Engine\Main());
         $list->addFile(__DIR__ . '/../../../conf/default.ini.php', 'ini');
 
         $list->push(new \Zaek\Kernel\Config([
@@ -20,7 +20,7 @@ class cconfiglistTest extends TestCase
     }
     public function testCorrectOrder()
     {
-        $list = new \Zaek\Kernel\ConfigList();
+        $list = new \Zaek\Kernel\ConfigList(new \Zaek\Engine\Main());
         $list->addFile(__DIR__ . '/../../../conf/default.ini.php', 'ini');
 
         $list->push(new \Zaek\Kernel\Config([
@@ -38,7 +38,7 @@ class cconfiglistTest extends TestCase
     }
     public function testInsert()
     {
-        $list = new \Zaek\Kernel\ConfigList();
+        $list = new \Zaek\Kernel\ConfigList(new \Zaek\Engine\Main());
         $list->addFile(__DIR__ . '/../../../conf/default.ini.php', 'ini');
 
         $list->push(new \Zaek\Kernel\Config([
@@ -68,7 +68,7 @@ class cconfiglistTest extends TestCase
     }
     public function issetTest()
     {
-        $list = new \Zaek\Kernel\ConfigList();
+        $list = new \Zaek\Kernel\ConfigList(new \Zaek\Engine\Main());
 
         $list->push([
             'template' => [

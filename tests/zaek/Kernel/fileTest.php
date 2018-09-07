@@ -34,6 +34,7 @@ class FileTest extends \Zaek\Kernel\File
 }
 class AppTest extends \Zaek\Engine\Main
 {
+    protected $_fs;
     public function fs()
     {
         if ( is_null($this->_fs) ) {
@@ -90,36 +91,10 @@ class cfileTest extends TestCase
     {
         return $this->_app->fs();
     }
-    /** Соответствие директории фреймворка */
-    public function testGetFrameworkRootPath()
-    {
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'], $this->fs()->getFrameworkRootPath());
-    }
     /** Соответствие корневой директории */
     public function testGetRootPath()
     {
         $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tests', $this->fs()->getRootPath());
-    }
-    /** Соответствие обработки путей к директориям */
-    public function testConvertPath()
-    {
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tests', $this->fs()->convertPath('%DOCUMENT_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek', $this->fs()->convertPath('%SYSTEM_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tpl', $this->fs()->convertPath('%TEMPLATE_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tpl/pages', $this->fs()->convertPath('%PAGE_TEMPLATE_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tpl/widgets', $this->fs()->convertPath('%WIDGET_TEMPLATE_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/content/zaek/admin', $this->fs()->convertPath('%ADMIN_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tmp/cache', $this->fs()->convertPath('%CACHE_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/local', $this->fs()->convertPath('%LANGUAGE_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/bin/widgets', $this->fs()->convertPath('%WIDGET_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/lib', $this->fs()->convertPath('%MODULES_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/tmp/upload', $this->fs()->convertPath('%UPLOAD_ROOT%'));
-        $this->assertEquals($_SERVER['DOCUMENT_ROOT'] . '/zaek/bin/notifications', $this->fs()->convertPath('%NOTIFICATION_ROOT%'));
-    }
-    /** Переопределение метода обработки пути */
-    public function testConvertPathOverride()
-    {
-        $this->assertEquals('/tmp', $this->_app_local->fs()->convertPath('%UPLOAD_ROOT%'));
     }
     public function testGetContent()
     {
@@ -154,7 +129,6 @@ class cfileTest extends TestCase
                 $root . '/1/2',
             ]
         ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/')));
-
         $this->assertTrue(arrays_are_similar([
             'dirs' => [
             ],
@@ -162,7 +136,7 @@ class cfileTest extends TestCase
                 $root . '/2.php',
                 $root . '/index.php',
             ]
-        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/', $this->_app->fs()::TYPE_ARR, '*.php')));
+        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/', '*.php')));
 
         $this->assertTrue(arrays_are_similar([
             'dirs' => [
@@ -172,7 +146,7 @@ class cfileTest extends TestCase
                 $root . '/2.php',
                 $root . '/2/index.php',
             ]
-        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/', $this->_app->fs()::TYPE_ARR, function($path) {
+        ], $this->fs()->getFS('%DOCUMENT_ROOT%/test_dir/', function($path) {
             return strstr($path, '2');
         })));
     }
