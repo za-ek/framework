@@ -38,7 +38,6 @@ class Connector extends \Zaek\Data\Connector
      *
      * @param $type
      * @param $aData
-     * @return mixed
      * @throws ColumnCountMismatch
      */
     public function insert($type, $aData)
@@ -58,7 +57,6 @@ class Connector extends \Zaek\Data\Connector
      * @param array $aFilter
      * @param array $aOrder
      * @param array $aLimit
-     * @return mixed
      * @throws ColumnCountMismatch
      */
     public function delete($type, $aFilter = [], $aOrder = [], $aLimit = [])
@@ -86,8 +84,6 @@ class Connector extends \Zaek\Data\Connector
                 self::$_memory[$type]->clear();
             }
         }
-
-        return true;
     }
 
     /**
@@ -98,7 +94,6 @@ class Connector extends \Zaek\Data\Connector
      * @param array $aFilter
      * @param array $aOrder
      * @param array $aLimit
-     * @return mixed
      * @throws ColumnCountMismatch
      */
     public function update($type, $aUpdate, $aFilter = [], $aOrder = [], $aLimit = [])
