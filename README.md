@@ -5,7 +5,7 @@ Za-ek PHP Framework
 
 # Composer
 
-composer require za-ek/zaek
+`composer require za-ek/zaek`
 
 # Установка и обновление
 
